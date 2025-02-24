@@ -1,0 +1,9 @@
+paths:
+  raw: "./data/raw/"
+  curated: "./data/curated/"
+
+postgres:
+  curated_table:
+    table1:
+    table2:
+    table3:
