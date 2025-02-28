@@ -1,0 +1,8 @@
+# Global files
+__pycache__/
+*.ipynb_checkpoints
+*.gzip
+*.jpg
+
+# Personal files
+base/
