@@ -2,14 +2,17 @@
 In this section, we would focus on how the potential relationships between user reviews and the items themselves. The scope of this would be limited to Amazon fashion.
 
 ## How to run
-```pip install -r requirements.txt```
-Run ```set_hf_env.bat``` file to suppress warnings when downloading datasets.
+```
+pip install -r requirements.txt
+set_hf_env.bat
+python -m main.py
+```
 Set your configurations in ```config/cofig.yaml``` based on the dataset(s) you would like to download.
-```python -m main.py``` 
+
 Do note that due to the large dataset sizes, the ```main.py``` script might take a long time to run.
 
 
-## Structure of raw data
+## Schema of raw data
 For each item, there would be a corresponding review, as well as a corresponding metadata attached to it. The structure of the data obtained would be as follows.
 
 ### Reviews
@@ -44,5 +47,50 @@ For each item, there would be a corresponding review, as well as a corresponding
 |details|dict|
 |parent_asin|str|
 
-## 
-For each category, we would structure them into databases with the following schema. 
+## Scehma of processed data
+
+# 📄 Database Schema
+
+## 🗄️ Table: `items`
+| Column        | Data Type  | Constraints                |
+|--------------|-----------|----------------------------|
+| `item_id`    | `SERIAL`  | `PRIMARY KEY`              |
+| `parent_asin`| `VARCHAR` | `NOT NULL UNIQUE`          |
+| `title`      | `VARCHAR` | `NOT NULL`                 |
+| `main_category` | `VARCHAR` | `NOT NULL`             |
+| `store`      | `VARCHAR` | `NOT NULL`                 |
+
+---
+
+## 🗄️ Table: `item_metrics`
+| Column        | Data Type  | Constraints                        |
+|--------------|-----------|------------------------------------|
+| `item_id`    | `INT`     | `FOREIGN KEY REFERENCES items(item_id) ON DELETE CASCADE` |
+| `average_rating` | `FLOAT`  |                                  |
+| `rating_number`  | `INTEGER` |                                |
+| `price`      | `FLOAT`   | `NOT NULL`                        |
+| **Constraint** | **`UNIQUE (item_id)`** | Ensures one row per item |
+
+---
+
+## 🗄️ Table: `reviews`
+| Column        | Data Type  | Constraints                        |
+|--------------|-----------|------------------------------------|
+| `review_id`  | `INT`     | `PRIMARY KEY`                     |
+| `asin`       | `VARCHAR` | `NOT NULL`                        |
+| `rating`     | `FLOAT`   |                                    |
+| `timestamp`  | `INTEGER` | `NOT NULL`                        |
+| `helpful_vote` | `INTEGER` | `NOT NULL`                     |
+| `verified_purchase` | `BOOLEAN` | `NOT NULL`                 |
+| `title`      | `VARCHAR` |                                    |
+| `text`       | `VARCHAR` |                                    |
+| **Constraint** | **`FOREIGN KEY (review_id) REFERENCES items(item_id) ON DELETE CASCADE`** | Ensures referential integrity |
+
+---
+
+## 🔄 Relationships
+- **One-to-One:** `item_metrics.item_id` → `items.item_id`
+- **One-to-Many:** `reviews.review_id` → `items.item_id`
+- **Foreign Key:** `reviews.review_id` references `items.item_id` (`ON DELETE CASCADE`)
+
+---
