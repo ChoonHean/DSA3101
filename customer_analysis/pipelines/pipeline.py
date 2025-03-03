@@ -1,5 +1,4 @@
-from pipeline_utils.DataClient import DataClient
-from pipeline_utils.DataProcessor import DataProcessor
+from customer_analysis.orm.DataClient import DataClient
 
 class DataPipeline:
     """
