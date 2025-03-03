@@ -1,0 +1,9 @@
+paths:
+  web: "McAuley-Lab/Amazon-Reviews-2023"
+  source: "./data/raw/"
+  connection: ""
+  curated: "./data/curated/"
+
+sql:
+  db: "./sql/create_scehma.sql"
+  queries: "./sql/queries/"
