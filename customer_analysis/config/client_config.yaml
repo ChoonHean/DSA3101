@@ -1,9 +1,8 @@
 paths:
   web: "McAuley-Lab/Amazon-Reviews-2023"
   source: "./data/raw/"
-  connection: ""
-  curated: "./data/curated/"
+  connection: "postgresql://postgres:12345678@localhost:5432/dsa3101"
 
 sql:
-  db: "./sql/create_scehma.sql"
+  db: "./sql/create_schema.sql"
   queries: "./sql/queries/"

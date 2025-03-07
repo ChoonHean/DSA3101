@@ -1,6 +1,8 @@
 # Analyzing and finding ways to increase user satisfaction.
 In this section, we would focus on how the potential relationships between user reviews and the items themselves. The scope of this would be limited to Amazon fashion.
 
+---
+
 ## How to run
 ```
 pip install -r requirements.txt
@@ -11,86 +13,41 @@ Set your configurations in ```config/cofig.yaml``` based on the dataset(s) you w
 
 Do note that due to the large dataset sizes, the ```main.py``` script might take a long time to run.
 
+---
 
-## Schema of raw data
-For each item, there would be a corresponding review, as well as a corresponding metadata attached to it. The structure of the data obtained would be as follows.
+## Raw data schema
+For each item, there would be a corresponding review, as well as a corresponding metadata attached to it. The structure of the data obtained would be as follows. (structure)[https://amazon-reviews-2023.github.io/]
 
-### Reviews
-|Field|Type|
-|--|--|
-|sort_timestamp|int|
-|rating|float|
-|helpful_votes|int|
-|title|str|
-|text|str|
-|images|list|
-|asin|str|
-|verified_purchase|bool|
-|parent_asin|str|
-|user_id|str|
+## Database Schema
 
-### Metadata
-|Field|Type|
-|--|--|
-|main_category|str|
-|title|str|
-|average_rating|float|
-|rating_number|int|
-|features|list|
-|description|list|
-|price|float|
-|images|list|
-|videos|list|
-|bought_together|list|
-|store|str|
-|categories|list|
-|details|dict|
-|parent_asin|str|
-
-## Scehma of processed data
-
-# 📄 Database Schema
-
-## 🗄️ Table: `items`
-| Column        | Data Type  | Constraints                |
-|--------------|-----------|----------------------------|
-| `item_id`    | `SERIAL`  | `PRIMARY KEY`              |
-| `parent_asin`| `VARCHAR` | `NOT NULL UNIQUE`          |
-| `title`      | `VARCHAR` | `NOT NULL`                 |
-| `main_category` | `VARCHAR` | `NOT NULL`             |
-| `store`      | `VARCHAR` | `NOT NULL`                 |
+### 📌 Items Table
+| Column Name      | Data Type  | Constraints         | Description |
+|-----------------|-----------|--------------------|-------------|
+| `parent_asin`   | `VARCHAR`  | `PRIMARY KEY`      | Unique identifier for the item |
+| `title`         | `VARCHAR`  | `NOT NULL`         | Title of the item |
+| `main_category` | `VARCHAR`  | `NOT NULL`         | Main category of the item |
+| `store`         | `VARCHAR`  | -                  | Store selling the item |
+| `average_rating`| `FLOAT`    | -                  | Average rating of the item |
+| `rating_number` | `INTEGER`  | -                  | Number of ratings received |
+| `price`         | `FLOAT`    | `NOT NULL`         | Price of the item |
 
 ---
 
-## 🗄️ Table: `item_metrics`
-| Column        | Data Type  | Constraints                        |
-|--------------|-----------|------------------------------------|
-| `item_id`    | `INT`     | `FOREIGN KEY REFERENCES items(item_id) ON DELETE CASCADE` |
-| `average_rating` | `FLOAT`  |                                  |
-| `rating_number`  | `INTEGER` |                                |
-| `price`      | `FLOAT`   | `NOT NULL`                        |
-| **Constraint** | **`UNIQUE (item_id)`** | Ensures one row per item |
+### 📌 Reviews Table
+| Column Name        | Data Type  | Constraints        | Description |
+|-------------------|-----------|------------------|-------------|
+| `review_id`      | `SERIAL`   | `PRIMARY KEY`     | Unique identifier for the review |
+| `parent_asin`    | `VARCHAR`  | `NOT NULL`        | Foreign key referring to `items(parent_asin)` |
+| `rating`         | `FLOAT`    | -                 | Rating given in the review |
+| `timestamp`      | `TIMESTAMP`| `NOT NULL`        | Timestamp of when the review was posted |
+| `helpful_vote`   | `INTEGER`  | `NOT NULL`        | Number of helpful votes received |
+| `verified_purchase` | `BOOLEAN` | `NOT NULL`       | Whether the reviewer purchased the item |
+| `title`         | `VARCHAR`  | -                 | Title of the review |
+| `text`          | `VARCHAR`  | -                 | Full text content of the review |
 
 ---
 
-## 🗄️ Table: `reviews`
-| Column        | Data Type  | Constraints                        |
-|--------------|-----------|------------------------------------|
-| `review_id`  | `INT`     | `PRIMARY KEY`                     |
-| `asin`       | `VARCHAR` | `NOT NULL`                        |
-| `rating`     | `FLOAT`   |                                    |
-| `timestamp`  | `INTEGER` | `NOT NULL`                        |
-| `helpful_vote` | `INTEGER` | `NOT NULL`                     |
-| `verified_purchase` | `BOOLEAN` | `NOT NULL`                 |
-| `title`      | `VARCHAR` |                                    |
-| `text`       | `VARCHAR` |                                    |
-| **Constraint** | **`FOREIGN KEY (review_id) REFERENCES items(item_id) ON DELETE CASCADE`** | Ensures referential integrity |
+### 🔗 **Table Relationships**
+- **`reviews.parent_asin`** → **FK → `items.parent_asin`**  
+  (Each review is associated with an item.)
 
----
-
-## 🔄 Relationships
-- **One-to-One:** `item_metrics.item_id` → `items.item_id`
-- **One-to-Many:** `reviews.review_id` → `items.item_id`
-- **Foreign Key:** `reviews.review_id` references `items.item_id` (`ON DELETE CASCADE`)
-
----

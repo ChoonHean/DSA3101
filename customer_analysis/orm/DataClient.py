@@ -1,7 +1,8 @@
 import os
 import pandas as pd
-
+import datetime
 import datasets
+
 datasets.logging.set_verbosity_error()
 
 from sqlalchemy.orm import sessionmaker
@@ -18,8 +19,8 @@ class DataClient:
     def __init__(self, web_connection:str, root: str, db_connection: str):
         self.web = web_connection
         self.root = root
-        self.engine = create_engine(db_connection)
-        self.session = sessionmaker(bind=self.engine)
+        self.engine = create_engine(db_connection, echo=True)
+        self.Session = sessionmaker(bind=self.engine)
 
     def _read_from_local(self, source:str):
         review_dir = os.path.join(self.state, source, 'reviews/')
@@ -35,12 +36,11 @@ class DataClient:
                     metadata = fp
         return reviews, metadata
     
-    def _read_from_lib(self, tables: list):
-        for dataset in tables:
-            reviews = datasets.load_dataset(
-                self.web_connections, f"raw_review_{dataset}", trust_remote_code=True)["full"]
-            metadata = datasets.load_dataset(
-                self.web_connections, f"raw_meta_{dataset}", trust_remote_code=True)
+    def _read_from_lib(self, dataset: str):
+        reviews = datasets.load_dataset(
+            self.web, f"raw_review_{dataset}", trust_remote_code=True)["full"]
+        metadata = datasets.load_dataset(
+            self.web, f"raw_meta_{dataset}", trust_remote_code=True)["full"]
         return reviews, metadata
 
     def _initialize_schema(self, schema_script_path):
@@ -49,115 +49,75 @@ class DataClient:
                 schema_sql = file.read()
             conn.execute(text(schema_sql))
             conn.commit()
+        print("Tables created.")
 
     def _insert_items(self, items):
         """Bulk insert or update items into the database."""
-        session = self.Session()
-        try:
+        with self.engine.connect() as conn:
+            columns = ["parent_asin", "title", "main_category", "store", "average_rating", "rating_number", "price"]
             item_data = [
                 {
-                    "parent_asin": item["parent_asin"], 
-                    "title": item["title"], 
-                    "price": item["main_category"],
-                    "store": item["store"]
+                    x: item[x] for x in columns
                 }
-                for item in items
+                for item in items if item["price"]!="None"
             ]
-
-            item_query = text("""
-                INSERT INTO items (parent_asin, title, main_category, store)
-                VALUES (:parent_asin, :title, :main_category, :store)
-                ON CONFLICT (parent_asin) 
-                DO UPDATE SET
-                    title = EXCLUDED.title,
-                    main_category = EXCLUDED.main_category,
-                    store = EXCLUDED.store
-                RETURNING item_id, parent_asin;
-            """)
-            
-            inserted_items = session.execute_many(item_query, item_data)
-            session.commit()
-
-            metrics_data = [
-                {
-                    "item_id": row.item_id, 
-                    "average_rating": item["average_rating"], 
-                    "rating_number": item["rating_number"], 
-                    "price": item["price"]
-                }
-                for row, item in zip(inserted_items, items)
-            ]
-
-            if metrics_data:
-                metrics_query = text("""
-                    INSERT INTO item_metrics (item_id, average_rating, rating_number, price)
-                    VALUES (:item_id, :average_rating, :rating_number, :price)
-                    ON CONFLICT (item_id) 
-                    DO UPDATE SET 
+            try:
+                item_query = text("""
+                    INSERT INTO items (parent_asin, title, main_category, store, average_rating, rating_number, price)
+                    VALUES (:parent_asin, :title, :main_category, :store, :average_rating, :rating_number, :price)
+                    ON CONFLICT (parent_asin) 
+                    DO UPDATE SET
+                        title = EXCLUDED.title,
+                        main_category = EXCLUDED.main_category,
+                        store = EXCLUDED.store,
                         average_rating = EXCLUDED.average_rating,
                         rating_number = EXCLUDED.rating_number,
                         price = EXCLUDED.price;
                 """)
-                session.execute_many(metrics_query, metrics_data)
-                session.commit()
+                conn.execute(item_query, item_data)
+                conn.commit() 
 
-        except Exception as e:
-            session.rollback()
-            print(f"Error during bulk insert into items: {e}")
-        finally:
-            session.close()
+            except Exception as e:
+                conn.rollback()
+                print(f"Error inserting items: {e}")  
+
+            conn.close()
+            
 
     def _insert_reviews(self, reviews):
         """Bulk insert or update reviews into the database."""
-        session = self.Session()
-        try:
-            asin_list = {review["parent_asin"] for review in reviews}  
-
-            item_id_query = text("""
-                SELECT item_id, parent_asin FROM items WHERE parent_asin = ANY(:asin_list);
-            """)
-
-            item_id_mapping = {
-                row.parent_asin: row.item_id
-                for row in session.execute(item_id_query, {"asin_list": list(asin_list)})
-            }
-
-            reviews_data = [
-                {
-                    "review_id": review["review_id"],
-                    "item_id": item_id_mapping.get(review["parent_asin"]),
-                    "rating": review["rating"],
-                    "timestamp": review["timestamp"],
-                    "helpful_vote": review["helpful_vote"],
-                    "title": review["title"],
-                    "text": review["text"],
-                }
-                for review in reviews if review["parent_asin"] in item_id_mapping
-            ]
-
-            if reviews_data:
+        columns = ["parent_asin", "rating", "timestamp", "helpful_vote", "verified_purchase", "title", "text"]
+        review_data = [
+            {
+                x: review[x] if x != "timestamp" else datetime.datetime.fromtimestamp(int(review[x])/1000.0, datetime.UTC) for x in columns
+            } 
+            for review in reviews
+        ]
+        with self.engine.connect() as conn:
+            try:
                 review_query = text("""
-                    INSERT INTO reviews (review_id, item_id, rating, timestamp, helpful_vote, title, text)
-                    VALUES (:review_id, :item_id, :rating, :timestamp, :helpful_vote, :title, :text)
-                    ON CONFLICT (review_id)
-                    DO UPDATE SET
-                        rating = EXCLUDED.rating,
-                        timestamp = EXCLUDED.timestamp,
-                        helpful_vote = EXCLUDED.helpful_vote,
-                        title = EXCLUDED.title,
-                        text = EXCLUDED.text;
+                    INSERT INTO reviews (parent_asin, rating, timestamp, helpful_vote, verified_purchase, title, text)
+                    VALUES (:parent_asin, :rating, :timestamp, :helpful_vote, :verified_purchase, :title, :text);
                 """)
-                session.execute_many(review_query, reviews_data)
-                session.commit()
+                conn.execute(review_query, review_data)
+                conn.commit() 
 
-        except Exception as e:
-            session.rollback()
-            print(f"Error during bulk insert into reviews: {e}")
-        finally:
-            session.close()
+            except Exception as e:
+                conn.rollback()
+                print(f"Error inserting reviews: {e}")  
 
-    def init_database(self, script, mode="test"):
-        raise NotImplementedError
+            conn.close()
+
+
+    def populate_database(self, script_path, kwargs):
+        self._initialize_schema(script_path)
+        if kwargs["mode"] == "web":
+            reviews, items = self._read_from_lib(kwargs["category"])
+        else:
+            reviews, items = self._read_from_local(kwargs["file_path"])
+        self._insert_items(items)
+        self._insert_reviews(reviews)
+        print("Tables created and populated!")
     
     def query_to_dataframe(self, query, params=None):
         """Run a query and return a Pandas DataFrame."""
