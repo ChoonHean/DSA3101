@@ -1,2 +1,6 @@
 numpy>=1.26.0
 pandas>=2.1.0
+scikit-learn~=1.6.1
+tqdm~=4.67.1
+sentence-transformers~=3.4.1
+nltk~=3.9.1
