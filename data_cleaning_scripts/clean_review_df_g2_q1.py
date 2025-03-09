@@ -2,7 +2,7 @@ import pandas as pd
 import re
 from vaderSentiment.vaderSentiment import SentimentIntensityAnalyzer
 
-# Load dataset and elect columns
+# Load dataset and select columns
 df_review = pd.read_json("C:\DSA3101\Amazon_Fashion.jsonl", lines=True, nrows = 1000)
 useful_columns = ['rating', 'title', 'text', 'parent_asin', 'timestamp', 'verified_purchase']
 df_review = df_review[useful_columns]
