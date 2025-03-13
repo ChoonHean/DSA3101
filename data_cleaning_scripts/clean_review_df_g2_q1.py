@@ -40,3 +40,6 @@ def get_vader_sentiment(text):
 df_review['sentiment_score'] = df_review['review'].apply(get_vader_sentiment)
 
 print(df_review.head())
+
+# save the data into csv
+df_review.to_csv("../dataset/cleaned_data/final_cleaned_review.csv", index=False)
