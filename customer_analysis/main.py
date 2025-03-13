@@ -7,12 +7,13 @@ from orm.DataClient import DataClient
 # from modules.img_builder import plt_save
 
 ROOT = os.getenv(__file__)
+POPULATE = FALSE
 
 def main():
     #####################
     # DB Initialization #
     #####################
-    with open("config/client_config.yaml", "r") as file:
+    with open("config/client.yaml", "r") as file:
         config = yaml.safe_load(file)
     client = DataClient(
         web_connection=config["paths"]["web"],
@@ -21,17 +22,17 @@ def main():
     )
     kwargs = {
         "mode": "web",
-        "category": "All_Beauty"
+        "category": "Amazon_Fashion"
     }
-    client.populate_database(config["sql"]["db"], kwargs)
+    if POPULATE:
+        client.populate_database(config["sql"]["db"], kwargs)
 
     #################
     # Execute query #
     #################
-    # queries = config["sql"]["queries"]
-    # for query in queries:
-    #     df = client.query_to_dataframe(query)
-    #     plt_save(df)
+    base_query = config["sql"]["queries"]+"base.sql"
+    df = client._run_script(base_query)
+    df.to_csv("exports/export.csv", index = False)
 
     # #########################
     # # Build a markdown file #

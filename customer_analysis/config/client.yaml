@@ -6,3 +6,4 @@ paths:
 sql:
   db: "./sql/create_schema.sql"
   queries: "./sql/queries/"
+  

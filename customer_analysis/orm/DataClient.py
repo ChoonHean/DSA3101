@@ -43,13 +43,15 @@ class DataClient:
             self.web, f"raw_meta_{dataset}", trust_remote_code=True)["full"]
         return reviews, metadata
 
-    def _initialize_schema(self, schema_script_path):
+    def _run_script(self, script_path):
         with self.engine.connect() as conn:
-            with open(schema_script_path, 'r') as file:
-                schema_sql = file.read()
-            conn.execute(text(schema_sql))
+            with open(script_path, 'r') as file:
+                sql_script = file.read()
+            result = conn.execute(text(sql_script))
+        df = pd.DataFrame(result.fetchall(), columns=result.keys()) if result.returns_rows else None
+        if not result.returns_rows:
             conn.commit()
-        print("Tables created.")
+        return df
 
     def _insert_items(self, items):
         """Bulk insert or update items into the database."""
@@ -110,7 +112,7 @@ class DataClient:
 
 
     def populate_database(self, script_path, kwargs):
-        self._initialize_schema(script_path)
+        self._run_script(script_path)
         if kwargs["mode"] == "web":
             reviews, items = self._read_from_lib(kwargs["category"])
         else:
