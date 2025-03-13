@@ -3,7 +3,7 @@ import re
 from vaderSentiment.vaderSentiment import SentimentIntensityAnalyzer
 
 # Load dataset and select columns
-df_review = pd.read_json("C:\DSA3101\Amazon_Fashion.jsonl", lines=True, nrows = 1000)
+df_review = pd.read_json("../dataset/raw_data/Amazon_Fashion.jsonl", lines=True)
 useful_columns = ['rating', 'title', 'text', 'parent_asin', 'timestamp', 'verified_purchase']
 df_review = df_review[useful_columns]
 
