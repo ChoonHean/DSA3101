@@ -15,7 +15,13 @@ tqdm.pandas()
 os.environ["TOKENIZERS_PARALLELISM"] = "false" # disable tokenizers parallelism for minibatchkmeans
 np.random.seed(42)
 
-def clean(text):
+def clean(text: str) -> str:
+    """
+    Text cleaning for product title e.g. lowercase, remove non-alphanumeric characters, remove extra spaces
+
+    :param text: Product title
+    :return: Cleaned product title
+    """
     # lowercase
     text = text.lower()
     # remove non-alphanumeric
@@ -24,11 +30,28 @@ def clean(text):
     text = re.sub(r"\s+", " ", text).strip()
     return text
 
-def lemmatize_sentence(lemmatizer, title):
+def lemmatize_sentence(lemmatizer, title: str) -> str:
+    """
+    Convert words in product title to their base forms e.g. running -> run
+
+    :param lemmatizer: A lemmatizer object
+    :param title: Product title
+    :return: Lemmatized product title
+    """
     lemmatized_words = [lemmatizer.lemmatize(word) for word in word_tokenize(title)]
     return " ".join(lemmatized_words)
 
 def get_top_words_per_cluster(tfidf_matrix, num_clusters, clusters, feature_names, top_n=10):
+    """
+    Extracts the top N words with the highest average TF-IDF scores for each cluster.
+
+    :param tfidf_matrix: A sparse matrix containing the TF-IDF scores.
+    :param num_clusters: Total number of clusters.
+    :param clusters: A Numpy array containing the cluster label for each product.
+    :param feature_names: A list of words (feature names) extracted from the TF-IDF vectorizer.
+    :param top_n: The number of top words to retrieve per cluster. Default is 10.
+    :return: A dictionary where the keys are cluster labels and the values are lists of the top N words representing each cluster.
+    """
     cluster_keywords = {}
     for cluster in tqdm(range(num_clusters), desc="Processing Clusters"):
         # get indices of items in this cluster
@@ -39,11 +62,21 @@ def get_top_words_per_cluster(tfidf_matrix, num_clusters, clusters, feature_name
         top_n_idx = cluster_tfidf.argsort()[-top_n:][::-1]
         cols = []
         for i in top_n_idx:
-            cols.append(feature_names[i]) # word
+            cols.append(feature_names[i])
         cluster_keywords[cluster] = cols
     return cluster_keywords
 
 def save_cluster_content(num_clusters, clusters, features, top_n=10):
+    """
+    Processes the top N most representative words for each cluster using TF-IDF. Result is saved as CSV file.
+    This function helps in understanding the defining characteristics of each cluster by identifying the top N most frequent words.
+
+    :param num_clusters: Total number of clusters.
+    :param clusters: A Numpy array containing the cluster label for each product.
+    :param features: Lemmatized product title (that captures the customization features of the product).
+    :param top_n: The number of top words to retrieve per cluster. Default is 10.
+    :return: None
+    """
     vectorizer = TfidfVectorizer()
     tfidf_matrix = vectorizer.fit_transform(features)
     feature_names = vectorizer.get_feature_names_out()
