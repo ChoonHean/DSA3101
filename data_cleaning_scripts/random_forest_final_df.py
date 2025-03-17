@@ -45,6 +45,7 @@ if __name__ == "__main__":
     df_final.fillna(0, inplace=True)
     df_final["year"] = df_final["year"].astype(int)
     df_final["num_sales"] = df_final["num_sales"].astype(int)
+    df_final["cluster_label"] = df_final["cluster_label"].astype("category")
     df_final = df_final.sort_values(by=["cluster_label", "year", "quarter"])
 
     print(df_final.head())
