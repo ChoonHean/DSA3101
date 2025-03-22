@@ -2,25 +2,54 @@ import pandas as pd
 import numpy as np
 from scipy.stats import norm
 
-# Load dataset
-demand_df = pd.read_csv("../dataset/modified_predicted_demand.csv")
-stock_df = pd.read_csv("../dataset/generated_cluster_stock.csv")
+# Load Dataset
+demand_df = pd.read_csv("./dataset/next_year_demand.csv")
 
-# Convert date column to datetime
+# Transform demand_df
+def convert_to_date(year, quarter):
+    """
+    Convert year and quarter into a real date.
+    The date corresponds to the first day of the quarter.
+    """
+    # Define mapping of quarter to the first month
+    quarter_to_month = {1: "01", 2: "04", 3: "07", 4: "10"}
+
+    # Format the date as YYYY-MM-DD
+    return pd.to_datetime(f"{year}-{quarter_to_month[quarter]}-01", format="%Y-%m-%d")
+
+
+demand_df["date"] = demand_df.apply(lambda row: convert_to_date(row["year"], row["quarter"]), axis=1)
+demand_df = demand_df.drop(columns=["year", "quarter"])
+demand_df['moving_avg_demand'] = demand_df.groupby(by=['cluster_label'])['predicted_demand'].transform(lambda x: x.rolling(window=10, min_periods=1).mean())
+
 demand_df['date'] = pd.to_datetime(demand_df['date'], format="%Y-%m-%d")
-
-# Extract year and quarter from date
 demand_df['year_quarter'] = demand_df['date'].dt.to_period("Q")
-
-# Compute standard deviation of demand
 std_dev_demand = demand_df["predicted_demand"].std()
 
 # Set desired service level (e.g. 95% confidence)
 service_level = 0.95
 z_score = norm.ppf(service_level)
 
-print(f"Standard Deviation of Predicted Sales: {std_dev_demand:.2f}")
-print(f"Z-score for {service_level*100}% service level: {z_score:.3f}")
+# Create stock_df
+stock_df = demand_df.copy()
+stock_df = stock_df.groupby("cluster_label").agg({
+    "predicted_demand": "sum"
+}).reset_index()
+
+np.random.seed(42)  # Set seed for reproducibility
+stock_df["stock_quantity"] = stock_df["predicted_demand"] * 0.5
+stock_df["lead_time_months"] = np.random.uniform(0.1, 3, size=len(stock_df)).round(2)
+stock_df["order_cost"] = np.random.randint(20, 80, size=len(stock_df))
+stock_df["holding_cost"] = np.random.randint(2, 10, size=len(stock_df))
+stock_df["last_restocked"] = "01/07/2023"
+
+# Select final columns (without category column)
+stock_df = stock_df[[
+    "cluster_label", "stock_quantity",
+    "lead_time_months", "order_cost", "holding_cost", "last_restocked"
+]]
+
+
 
 # Calculate quarterly safety stock
 def get_quarterly_safety_stock(df_1, df_2, z_score):
@@ -44,6 +73,8 @@ def get_quarterly_safety_stock(df_1, df_2, z_score):
 
     return safety_stock_df.drop(columns=['lead_time_quarters'])
 
+
+
 # Calculate quarterly reorder point
 def get_quarterly_reorder_point(df_1, df_2, z_score):
     # Compute average quarterly demand per cluster
@@ -58,8 +89,10 @@ def get_quarterly_reorder_point(df_1, df_2, z_score):
 
     # Create a lead time dataframe: one row per cluster
     lead_time_df = df_2[['cluster_label', 'lead_time_months']].drop_duplicates()
+    
     # Convert lead time from months to quarters (round up)
     lead_time_df['lead_time_quarters'] = np.ceil(lead_time_df['lead_time_months'] / 3)
+    
     # Merge this info into reorder_df based on cluster_label
     reorder_df = pd.merge(reorder_df, lead_time_df[['cluster_label', 'lead_time_quarters']], on='cluster_label', how='left')
     reorder_df['lead_time_quarters'] = reorder_df['lead_time_quarters'].fillna(1)
@@ -68,6 +101,7 @@ def get_quarterly_reorder_point(df_1, df_2, z_score):
     reorder_df['reorder_point'] = (reorder_df['quarterly_avg_pd'] * reorder_df['lead_time_quarters']) + reorder_df['quarterly_safety_stock']
 
     return reorder_df
+
 
 
 # Calculate quarterly EOQ
@@ -84,7 +118,9 @@ def get_quarterly_eoq(df_1, df_2):
 
     return eoq_df
 
-# Find clusters that teed testocking
+
+
+# Find clusters that need restocking
 def get_quarterly_restock(df_1, df_2, z_score):
     reorder_point_df = get_quarterly_reorder_point(df_1, df_2, z_score)[['cluster_label', 'year_quarter', 'reorder_point']]
     eoq_df = get_quarterly_eoq(df_1, df_2)[['cluster_label', 'year_quarter', 'optimal_qty']]
