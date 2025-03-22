@@ -7,7 +7,7 @@ from orm.DataClient import DataClient
 # from modules.img_builder import plt_save
 
 ROOT = os.getenv(__file__)
-POPULATE = FALSE
+POPULATE = False
 
 def main():
     #####################
@@ -30,9 +30,13 @@ def main():
     #################
     # Execute query #
     #################
-    base_query = config["sql"]["queries"]+"base.sql"
-    df = client._run_script(base_query)
-    df.to_csv("exports/export.csv", index = False)
+    reviews_query = config["sql"]["queries"]+"reviews.sql"
+    df = client._run_script(reviews_query)
+    df.to_csv("exports/reviews.csv", index = False)
+
+    items_query = config["sql"]["queries"]+"items.sql"
+    df = client._run_script(items_query)
+    df.to_csv("exports/items.csv", index = False)
 
     # #########################
     # # Build a markdown file #

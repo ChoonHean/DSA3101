@@ -8,3 +8,4 @@ base/
 
 # customer_analysis
 customer_analysis/exports/
+*.ipynb
