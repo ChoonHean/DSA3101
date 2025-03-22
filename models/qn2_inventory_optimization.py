@@ -3,7 +3,7 @@ import numpy as np
 from scipy.stats import norm
 
 # Load Dataset
-demand_df = pd.read_csv("./dataset/next_year_demand.csv")
+demand_df = pd.read_csv("../dataset/next_year_demand.csv")
 
 # Transform demand_df
 def convert_to_date(year, quarter):
@@ -50,7 +50,6 @@ stock_df = stock_df[[
 ]]
 
 
-
 # Calculate quarterly safety stock
 def get_quarterly_safety_stock(df_1, df_2, z_score):
     df_2 = df_2[['cluster_label', 'lead_time_months']]
@@ -72,7 +71,6 @@ def get_quarterly_safety_stock(df_1, df_2, z_score):
     )
 
     return safety_stock_df.drop(columns=['lead_time_quarters'])
-
 
 
 # Calculate quarterly reorder point
@@ -103,7 +101,6 @@ def get_quarterly_reorder_point(df_1, df_2, z_score):
     return reorder_df
 
 
-
 # Calculate quarterly EOQ
 def get_quarterly_eoq(df_1, df_2):
     eoq_df = df_1.groupby(['cluster_label', 'year_quarter'])['moving_avg_demand'].mean().reset_index()
@@ -117,7 +114,6 @@ def get_quarterly_eoq(df_1, df_2):
     eoq_df = eoq_df.drop(columns=['order_cost', 'holding_cost'])
 
     return eoq_df
-
 
 
 # Find clusters that need restocking
