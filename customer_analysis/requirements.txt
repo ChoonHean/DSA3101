@@ -8,3 +8,5 @@ matplotlib>=3.10.1
 seaborn>=0.13.2
 nltk>=3.9.1
 sk-learn>=1.6.1
+transformers>=4.50.0
+torch>=2.6
