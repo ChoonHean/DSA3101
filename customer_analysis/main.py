@@ -3,8 +3,7 @@ import os
 import time
 
 from orm.DataClient import DataClient
-# from modules.md_builder import generate_md_report
-# from modules.img_builder import plt_save
+from modules.img_builder import save_vis
 
 ROOT = os.getenv(__file__)
 POPULATE = False
@@ -31,17 +30,13 @@ def main():
     # Execute query #
     #################
     reviews_query = config["sql"]["queries"]+"reviews.sql"
-    df = client._run_script(reviews_query)
-    df.to_csv("exports/reviews.csv", index = False)
+    reviews = client._run_script(reviews_query)
+    reviews.to_csv("data/reviews.csv", index = False)
 
-    items_query = config["sql"]["queries"]+"items.sql"
-    df = client._run_script(items_query)
-    df.to_csv("exports/items.csv", index = False)
-
-    # #########################
-    # # Build a markdown file #
-    # #########################
-    # generate_md_report()
+    ###############
+    # Save Images #
+    ###############
+    save_vis(reviews)
 
 
 
