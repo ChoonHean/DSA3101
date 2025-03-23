@@ -7,7 +7,7 @@ In this section, we would focus on how the potential relationships between user 
 ```
 pip install -r requirements.txt
 set_hf_env.bat
-python -m main.py
+python main.py
 ```
 Set your configurations in ```config/cofig.yaml``` based on the dataset(s) you would like to download.
 
