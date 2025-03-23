@@ -21,20 +21,6 @@ class DataClient:
         self.root = root
         self.engine = create_engine(db_connection, echo=True)
         self.Session = sessionmaker(bind=self.engine)
-
-    def _read_from_local(self, source:str):
-        review_dir = os.path.join(self.state, source, 'reviews/')
-        metadata_dir = os.path.join(self.state, source, 'metadata/')
-        for file_name in os.listdir(review_dir):
-            review_file = os.path.join(review_dir, file_name)
-            metadata_file = os.path.join(metadata_dir, f"meta_{os.path.basename}")
-            if os.path.isfile(review_file):
-                with open(review_file, 'r') as fp:
-                    reviews = fp
-            if os.path.isfile(metadata_file):
-                with open(metadata_file, 'r') as fp:
-                    metadata = fp
-        return reviews, metadata
     
     def _read_from_lib(self, dataset: str):
         reviews = datasets.load_dataset(
