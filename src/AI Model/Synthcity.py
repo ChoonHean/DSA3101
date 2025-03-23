@@ -10,7 +10,7 @@ import os
 class CustomImageDataset(Dataset):
     def __init__(self, image_folder, transform=None):
         self.image_folder = image_folder
-        self.image_files = [f for f in os.listdir(image_folder) if f.endswith('.jpg')]
+        self.image_files = [f for f in os.listdir(image_folder) if f.endswith('.jpg')][:2]
         self.transform = transform
 
     def __len__(self):
@@ -47,3 +47,5 @@ save_to_file("models/synthcity_cgan.pkl", syn_model)
 reloaded = load_from_file("models/synthcity_cgan.pkl")
 
 syn_img, syn_labels = syn_model.generate(count=10).unpack().numpy()
+
+
