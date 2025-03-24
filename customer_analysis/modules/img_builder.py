@@ -43,12 +43,12 @@ def preprocess(df):
 
     return df
 
-def word_cloud(df, rating, tail="right", review_category="all"):
+def word_cloud(df, rating, file_dir, tail="right", review_category="all"):
     nltk.download('stopwords')
     reviews = df[df['rating'] >= rating] if tail =="right" else df[df['rating'] <= rating]
     reviews = reviews['review_category'] if (review_category!="all" and "review_category" in reviews.columns) else reviews
     vectorizer = TfidfVectorizer(stop_words='english')
-    X = vectorizer.fit_transform(reviews['full_text'])
+    X = vectorizer.fit_transform(reviews['full_text'].astype())
     tfidf_scores = X.sum(axis=0).A1
     words = vectorizer.get_feature_names_out()
     word_tfidf = dict(zip(words, tfidf_scores))
@@ -56,9 +56,11 @@ def word_cloud(df, rating, tail="right", review_category="all"):
     plt.figure(figsize=(10, 5))
     plt.imshow(wordcloud, interpolation='bilinear')
     plt.axis('off')
-    plt.show()
+    review_category = "price_value" if review_category=="price value" else review_category
+    plt.savefig(f"{file_dir}_{review_category}_{tail}.png")
+    plt.close()
 
-def agg_reviews(df):
+def agg_reviews(df, file_dir):
     reviews_grouped = df.groupby('review_category')["review_id"].nunique().reset_index()
     reviews_grouped = reviews_grouped.rename(columns={"review_id": "review_count"})
     reviews_grouped = reviews_grouped[reviews_grouped["review_category"]!="none"]
@@ -66,4 +68,17 @@ def agg_reviews(df):
     plt.xlabel('Categories')
     plt.ylabel('Count')
     plt.title('Number of reviews per category')
-    plt.show()
+    plt.savefig(f"{file_dir}reviews_by_categories.png")
+    plt.close()
+
+def agg_store(df, file_dir):
+    store_grouped = df.groupby("store").agg(
+        num_reviews = ("review_id", "nunique"),
+        rating = ("rating", "mean")
+    ).reset_index()
+    store_grouped = store_grouped[store_grouped["num_reviews"] >= 10]
+    plt.scatter(store_grouped["rating"], store_grouped["num_reviews"], s=10)    
+    plt.xlabel('Rating')
+    plt.ylabel('Number of Reviews')
+    plt.savefig(f"{file_dir}rating_reviewcount.png")
+    plt.close()

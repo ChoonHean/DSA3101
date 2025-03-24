@@ -7,32 +7,38 @@ This report provides an analysis of the dataset. The data is visualized through 
 
 ## Dataset Overview
 
-- **Dataset**: [Name of the dataset or source]
-- **Number of Records**: [Number of records]
-- **Key Variables**: [List of important variables or features]
+- **Dataset**: Amazon Fashion
+- **Number of Records**: 827,192 rows raw, 10,000 processed
 
+Due to heavy computational costs (due to the use of LLMS), we would randomly sample 10,000 rows from raw data for showcasing purposes.
 ---
 
 ## What to look out for customer satisfaction?
 
-![Some image here](https://github.com/ChoonHean/DSA3101/customer_analysis/exports/placeholder.png)
+![Rating vs Review count](https://github.com/ChoonHean/DSA3101/customer_analysis/exports/rating_reviewcount.png)
 
-**Interpretation**:  
-I am very hungry.
-
----
-
-## Plot 2: Relationship between [Variable 1] and [Variable 2]
-
-![Some image here](https://github.com/ChoonHean/DSA3101/customer_analysis/exports/placeholder.png)
 **Interpretation**:  
 Potatoes are on sale!
 
 ---
 
-## Plot 3: Trends over Time
+## What do customers usually say?
 
-![Some image here](https://github.com/ChoonHean/DSA3101/customer_analysis/exports/placeholder.png)
+![Good generally](https://github.com/ChoonHean/DSA3101/customer_analysis/exports/wordcloud_all_right.png)
+![Bad generally](https://github.com/ChoonHean/DSA3101/customer_analysis/exports/wordcloud_all_left.png)
+
+**Interpretation**:  
+I shall eat spaghetti for dinner...
+
+---
+
+## What are customers most concerned about?
+
+![Reviews by category](https://github.com/ChoonHean/DSA3101/customer_analysis/exports/reviews_by_category.png)
+
+### Now lets look at what customers say in the most important categories
+![PV Good](https://github.com/ChoonHean/DSA3101/customer_analysis/exports/wordcloud_price_value_right.png)
+![PV Bad](https://github.com/ChoonHean/DSA3101/customer_analysis/exports/wordcloud_price_value_left.png)
 
 **Interpretation**:  
 I shall eat spaghetti for dinner...
