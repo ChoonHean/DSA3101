@@ -20,6 +20,9 @@ def preprocess(df):
     df["num_sales_lag_3Q"] = df.groupby("cluster_label")["num_sales"].shift(3)
     df["num_sales_lag_4Q"] = df.groupby("cluster_label")["num_sales"].shift(4)
 
+    # remove years before 2013 due to lack of data
+    df = df[df["time_index"] >= 2012]
+
     # one-hot encoding for cluster label
     df['cluster_label'] = df['cluster_label'].astype(int)
     df = pd.get_dummies(df, columns=['cluster_label'], prefix='cluster')
@@ -27,8 +30,12 @@ def preprocess(df):
                   key=lambda x: int(x.split('_')[-1]))
     df = df[[col for col in df.columns if col not in ohe_cols] + ohe_cols]
 
-    # apply log transformation to num_sales
+    # apply log transformation to num_sales and lagged num_sales
     df["num_sales"] = np.log1p(df["num_sales"])
+    df["num_sales_lag_1Q"] = np.log1p(df["num_sales_lag_1Q"])
+    df["num_sales_lag_2Q"] = np.log1p(df["num_sales_lag_2Q"])
+    df["num_sales_lag_3Q"] = np.log1p(df["num_sales_lag_3Q"])
+    df["num_sales_lag_4Q"] = np.log1p(df["num_sales_lag_4Q"])
 
     # remove year and quarter
     df = df.drop(columns=['year', 'quarter'])
@@ -52,10 +59,10 @@ def split_train_test(df, target_col, split_year):
     X = df.drop(columns=[target_col])
     y = df[target_col]
 
-    X_train = X[df["year"] < split_year]
-    X_test = X[df["year"] >= split_year]
-    y_train = y[df["year"] < split_year]
-    y_test = y[df["year"] >= split_year]
+    X_train = X[df["time_index"] < split_year]
+    X_test = X[df["time_index"] >= split_year]
+    y_train = y[df["time_index"] < split_year]
+    y_test = y[df["time_index"] >= split_year]
 
     return X_train, X_test, y_train, y_test
 
