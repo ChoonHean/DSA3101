@@ -17,10 +17,15 @@ def preprocess(df):
     df["time_index"] = df["year"] + (df["quarter"] - 1) / 4
     df["num_sales_lag_1Q"] = df.groupby("cluster_label")["num_sales"].shift(1)
     df["num_sales_lag_2Q"] = df.groupby("cluster_label")["num_sales"].shift(2)
+    df["num_sales_lag_3Q"] = df.groupby("cluster_label")["num_sales"].shift(3)
     df["num_sales_lag_4Q"] = df.groupby("cluster_label")["num_sales"].shift(4)
 
     # one-hot encoding for cluster label
-    df = pd.get_dummies(df, columns=["cluster_label"], drop_first=True)
+    df['cluster_label'] = df['cluster_label'].astype(int)
+    df = pd.get_dummies(df, columns=['cluster_label'], prefix='cluster')
+    ohe_cols = sorted([col for col in df.columns if col.startswith('cluster_')],
+                  key=lambda x: int(x.split('_')[-1]))
+    df = df[[col for col in df.columns if col not in ohe_cols] + ohe_cols]
 
     # apply log transformation to sales numbers? dont need?
     df["num_sales"] = np.log1p(df["num_sales"])
@@ -28,6 +33,7 @@ def preprocess(df):
     # fill missing values with 0 sales
     df.fillna(0, inplace=True)
 
+    df.to_csv("../dataset/demand_forecasting/random_forest_dataset.csv", index=False)
     return df
 
 
