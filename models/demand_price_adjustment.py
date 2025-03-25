@@ -53,7 +53,7 @@ if __name__ == '__main__':
     # Load model
     demand_forecast_model = joblib.load("random_forest_model.joblib")
     # Load data set
-    df = pd.read_csv("random_forest_dataset.csv")
+    df = pd.read_csv("../datasets/random_forest_dataset.csv")
 
     # Inputs (Sample, can be changed)
     cluster = 2
