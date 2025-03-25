@@ -33,7 +33,7 @@ def preprocess(df):
     # fill missing values with 0 sales
     df.fillna(0, inplace=True)
 
-    df.to_csv("../dataset/demand_forecasting/random_forest_dataset.csv")
+    df.to_csv("../dataset/demand_forecasting/random_forest_dataset.csv", index=False)
     return df
 
 
