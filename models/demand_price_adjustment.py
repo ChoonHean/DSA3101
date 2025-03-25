@@ -1,15 +1,17 @@
 import joblib
 import pandas as pd
 
-def get_baseprice_pct(parameters, demand_forecast_model):
+def get_baseprice_pct(parameters):
     """
     Calculate the suggested price adjustment percentage for a product cluster 
     based on forecasted demand and historical baseline demand.
 
-    :param parameters: A dataframe with parameters requiredto forecast demand for next quarter
-    :param demand_forecast_model: A trained model that forecasts demand based on cluster, year, and quarter.
+    :param parameters: A dataframe consisting of the parameters required to forecast demand for next quarter
+    :param demand_forecast_model: A trained forecasting model that predicts demandbased on cluster, year, and quarter.
     :return: Suggested price adjustment as a decimal (e.g., 0.05 for +5% increase).
     """
+    # Load model
+    demand_forecast_model = joblib.load("random_forest_model.joblib")
     # Obtain forecasted demand
     forecasted_demand = demand_forecast_model.predict(parameters)[0]
 
@@ -25,16 +27,18 @@ def get_baseprice_pct(parameters, demand_forecast_model):
 
     return price_change
 
-def get_parameters(cluster, year, quarter, df):
+def get_parameters(cluster, year, quarter):
     """
     Returns parameters for the demand forecasting model based on product cluster and current year/quarter.
-    
+
     :param cluster: The cluster label of the product.
     :param year: The current year for which the price adjustment is calculated.
     :param quarter: The current quarter for which the price adjustment is calculated (1 to 4).
-    :param df: Dataset containing data of previous quarters, in similar format to train data of the model
     :return: Suggested price adjustment as a decimal (e.g., 0.05 for +5% increase).
     """
+    # Load data set
+    df = pd.read_csv("../datasets/random_forest_dataset.csv")
+
     # Get time_index of previous quarter
     time_index = year + (quarter - 1) / 4
 
@@ -50,19 +54,14 @@ def get_parameters(cluster, year, quarter, df):
     return parameters
 
 if __name__ == '__main__':
-    # Load model
-    demand_forecast_model = joblib.load("random_forest_model.joblib")
-    # Load data set
-    df = pd.read_csv("../datasets/random_forest_dataset.csv")
-
-    # Inputs (Sample, can be changed)
+    # Inputs
     cluster = 2
     year = 2015
     quarter = 2
 
     # Get parameters for demand prediction
-    parameters = get_parameters(cluster, year, quarter, df)
+    parameters = get_parameters(cluster, year, quarter)
 
     # Get recommended percentage of price adjustment
-    price_adjustment = f'{get_baseprice_pct(parameters, demand_forecast_model) * 100}%'
+    price_adjustment = f'{get_baseprice_pct(parameters) * 100}%'
     print(price_adjustment)
