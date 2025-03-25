@@ -27,8 +27,11 @@ def preprocess(df):
                   key=lambda x: int(x.split('_')[-1]))
     df = df[[col for col in df.columns if col not in ohe_cols] + ohe_cols]
 
-    # apply log transformation to sales numbers? dont need?
+    # apply log transformation to num_sales
     df["num_sales"] = np.log1p(df["num_sales"])
+
+    # remove year and quarter
+    df = df.drop(columns=['year', 'quarter'])
 
     # fill missing values with 0 sales
     df.fillna(0, inplace=True)
