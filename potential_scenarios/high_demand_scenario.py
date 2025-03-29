@@ -25,7 +25,7 @@ naive_results_df = apply_naive_inventory_strategy(demand_df, stock_df)
 print(naive_results_df.head())
 
 # Save results if needed
-naive_results_df.to_csv("../dataset/high_demand_naive_inventory_results.csv", index=False)
+# naive_results_df.to_csv("../dataset/high_demand_naive_inventory_results.csv", index=False)
 
 
 # Apply our algo
