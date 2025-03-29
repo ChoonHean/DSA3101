@@ -1,1 +1,9 @@
+# 28/02/2025 (Jun Yuan)
+
+1. Create new file under dataset called `AmazonProduct.py` that loads in the all_beauty category and save it as parquet
+   file under dataset after simple preprocessing
+
+2. New file under src/AI Model/DataPreprocess.py which process the dataset into list of urls
+
+3. New file under AI Model/Synthcity.py that attempts to generate variation of images with Synthcity library
 

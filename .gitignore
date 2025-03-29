@@ -1,10 +1,13 @@
 # Global files
 __pycache__/
 *.ipynb_checkpoints
+<<<<<<< HEAD
 data/
 
 # Personal files
 base/
 
 # customer_analysis
-*.ipynb
+*.gzip
+*.jpg
+base/
