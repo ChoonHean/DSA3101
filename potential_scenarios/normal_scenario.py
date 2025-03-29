@@ -129,7 +129,7 @@ def compare_inventory_models(optimized_df, baseline_df, inventory_df):
     optimized_df = optimized_df.merge(cost_df, on="cluster_label", how="left")
     baseline_df = baseline_df.merge(cost_df, on="cluster_label", how="left")
 
-    # ----- For the Optimized Algorithm -----
+    # For the Optimized Algorithm
     total_unmet_optimized = optimized_df["unmet_demand"].sum()
     stockout_rate_optimized = (optimized_df[optimized_df["unmet_demand"] > 0].shape[0] / optimized_df.shape[0]) * 100
     service_level_optimized = 100 - stockout_rate_optimized
@@ -140,7 +140,7 @@ def compare_inventory_models(optimized_df, baseline_df, inventory_df):
     avg_holding_cost_optimized = (positive_rolling_stock_optimized * optimized_df["holding_cost"]).sum() / max(
         len(optimized_df), 1)
 
-    # ----- For the Baseline (Naive) Strategy -----
+    # For the Baseline (Naive) Strategy
     total_unmet_baseline = baseline_df["unmet_demand"].sum()
     stockout_rate_baseline = (baseline_df[baseline_df["unmet_demand"] > 0].shape[0] / baseline_df.shape[0]) * 100
     service_level_baseline = 100 - stockout_rate_baseline
@@ -162,7 +162,6 @@ def compare_inventory_models(optimized_df, baseline_df, inventory_df):
     return comparison_df
 
 
-
 # Load datasets
 demand_df = pd.read_csv("../dataset/simulated_demand.csv")
 stock_df = pd.read_csv("../dataset/simulated_stock.csv")
@@ -175,15 +174,13 @@ demand_df['year_quarter'] = demand_df['date'].dt.to_period("Q")
 
 demand_df['moving_avg_demand'] = demand_df.groupby(by=['cluster_label'])['predicted_demand'].transform(lambda x: x.rolling(window=10, min_periods=1).mean())
 
-
 # Apply naive strategy
 naive_results_df = apply_naive_inventory_strategy(demand_df, stock_df)
 
 print(naive_results_df.head())
 
-# Save results
-naive_results_df.to_csv("../dataset/naive_inventory_results.csv", index=False)
-
+# Save results if needed
+# naive_results_df.to_csv("../dataset/naive_inventory_results.csv", index=False)
 
 # Apply our algo
 service_level = 0.95
@@ -193,9 +190,8 @@ algo_result_df= get_quarterly_restock(demand_df, stock_df, z_score)
 
 print(algo_result_df.head())
 
-# Save results
-algo_result_df.to_csv("../dataset/algo_result.csv", index=False)
-
+# Save results if needed
+# algo_result_df.to_csv("../dataset/algo_result.csv", index=False)
 
 # Make comparison
 comparison = compare_inventory_models(algo_result_df, naive_results_df, stock_df)
