@@ -2,7 +2,7 @@ import pandas as pd
 import numpy as np
 from scipy.stats import norm
 
-# Load Dataset
+# Load dataset
 demand_df = pd.read_csv("../dataset/next_year_demand.csv")
 
 # Transform demand_df
@@ -50,8 +50,19 @@ stock_df = stock_df[[
 ]]
 
 
-# Calculate quarterly safety stock
 def get_quarterly_safety_stock(df_1, df_2, z_score):
+    """
+        Calculate quarterly safety stock for each cluster using standard deviation
+        of moving average demand and lead time.
+
+        Parameters:
+            df_1 (pd.DataFrame): Demand dataframe
+            df_2 (pd.DataFrame): Stock dataframe
+            z_score (float): Z-score corresponding to the desired service level.
+
+        Returns:
+            pd.DataFrame: Quarterly safety stock values per cluster and quarter.
+    """
     df_2 = df_2[['cluster_label', 'lead_time_months']]
 
     # Group by cluster_label and quarter, then compute standard deviation
@@ -73,8 +84,19 @@ def get_quarterly_safety_stock(df_1, df_2, z_score):
     return safety_stock_df.drop(columns=['lead_time_quarters'])
 
 
-# Calculate quarterly reorder point
 def get_quarterly_reorder_point(df_1, df_2, z_score):
+    """
+        Calculate reorder point for each cluster and quarter using:
+        Reorder Point = (Avg Demand × Lead Time) + Safety Stock
+
+        Parameters:
+            df_1 (pd.DataFrame): Demand dataframe
+            df_2 (pd.DataFrame): Stock dataframe
+            z_score (float): Z-score for service level.
+
+        Returns:
+            pd.DataFrame: Reorder point per cluster and quarter.
+    """
     # Compute average quarterly demand per cluster
     reorder_df = df_1.groupby(['cluster_label', 'year_quarter'])['moving_avg_demand'].mean().reset_index()
     reorder_df = reorder_df.rename(columns={'moving_avg_demand': 'quarterly_avg_pd'})
@@ -95,29 +117,48 @@ def get_quarterly_reorder_point(df_1, df_2, z_score):
     reorder_df = pd.merge(reorder_df, lead_time_df[['cluster_label', 'lead_time_quarters']], on='cluster_label', how='left')
     reorder_df['lead_time_quarters'] = reorder_df['lead_time_quarters'].fillna(1)
 
-    # Reorder Point = (Quarterly Avg Demand × Lead Time in Quarters) + Safety Stock
+    # Calculate reorder point
     reorder_df['reorder_point'] = (reorder_df['quarterly_avg_pd'] * reorder_df['lead_time_quarters']) + reorder_df['quarterly_safety_stock']
 
     return reorder_df
 
 
-# Calculate quarterly EOQ
 def get_quarterly_eoq(df_1, df_2):
+    """
+        Calculate EOQ (Economic Order Quantity) for each cluster per quarter.
+
+        Parameters:
+            df_1 (pd.DataFrame): Demand dataframe
+            df_2 (pd.DataFrame): Stock dataframe
+
+        Returns:
+            pd.DataFrame: EOQ values per cluster and quarter.
+    """
     eoq_df = df_1.groupby(['cluster_label', 'year_quarter'])['moving_avg_demand'].mean().reset_index()
     eoq_df = eoq_df.rename(columns={'moving_avg_demand': "quarterly_avg_demand"})
 
     df_2 = df_2[['cluster_label', 'order_cost', 'holding_cost']]
     eoq_df = pd.merge(eoq_df, df_2, on='cluster_label')
 
-    # Calculate EOQ: Economic Order Quantity per Quarter
+    # Calculate EOQ
     eoq_df['optimal_qty'] = np.round(np.sqrt((2 * eoq_df['quarterly_avg_demand'] * eoq_df['order_cost']) / eoq_df['holding_cost'])).astype(int)
     eoq_df = eoq_df.drop(columns=['order_cost', 'holding_cost'])
 
     return eoq_df
 
 
-# Find clusters that need restocking
 def get_quarterly_restock(df_1, df_2, z_score):
+    """
+        Determine which clusters need restocking for each quarter.
+
+        Parameters:
+            df_1 (pd.DataFrame): Demand dataframe.
+            df_2 (pd.DataFrame): Stock dataframe.
+            z_score (float): Z-score for service level.
+
+        Returns:
+            pd.DataFrame: Clusters and quarters where restocking is needed, along with optimal quantity.
+    """
     reorder_point_df = get_quarterly_reorder_point(df_1, df_2, z_score)[['cluster_label', 'year_quarter', 'reorder_point']]
     eoq_df = get_quarterly_eoq(df_1, df_2)[['cluster_label', 'year_quarter', 'optimal_qty']]
     stock_df = df_2[['cluster_label', 'stock_quantity']]
