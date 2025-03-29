@@ -10,6 +10,11 @@ import string
 
 
 def _clean(text):
+    """
+    Processes text for natural language processing 
+    :param text: String of text.
+    :return text: String of processed text.
+    """ 
     text = text.lower()
     text = ''.join([char for char in text if char not in string.punctuation])
     stop_words = set(stopwords.words('english'))
@@ -21,6 +26,12 @@ def _clean(text):
     return text
 
 def preprocess(df):
+    """
+    Takes in a pandas dataframe, and applies one-shot classification to "full_text" column of
+    (str) type.
+    :param df: Pandas dataframe containing "full_text" column.
+    :return df: Pandas dataframe with additional "review_category" column.
+    """ 
     df = df.sample(n=10000, random_state=3101)
     df["full_text"] = df["text"].astype(str).apply(_clean)
     if torch.cuda.is_available():
@@ -44,6 +55,14 @@ def preprocess(df):
     return df
 
 def word_cloud(df, rating, file_dir, tail="right", review_category="all"):
+    """
+    Creates a word cloud depending on rating and review category.
+    :param df: Pandas dataframe containing "rating" and "review_category" column.
+    :param rating: Rating integer.
+    :param file_dir: Directory to save word cloud image.
+    :param tail: Left or right tail of rating.
+    :param review_category: Review category for word cloud.
+    """
     nltk.download('stopwords')
     reviews = df[df['rating'] >= rating] if tail =="right" else df[df['rating'] <= rating]
     reviews = reviews['review_category'] if (review_category!="all" and "review_category" in reviews.columns) else reviews
@@ -61,6 +80,11 @@ def word_cloud(df, rating, file_dir, tail="right", review_category="all"):
     plt.close()
 
 def agg_reviews(df, file_dir):
+    """
+    Save a bar plot of spread of review categories. 
+    :param df: Pandas dataframe with "review_category" column.
+    :param file_dir: String for file dir to save bar plot.
+    """
     reviews_grouped = df.groupby('review_category')["review_id"].nunique().reset_index()
     reviews_grouped = reviews_grouped.rename(columns={"review_id": "review_count"})
     reviews_grouped = reviews_grouped[reviews_grouped["review_category"]!="none"]
@@ -72,6 +96,11 @@ def agg_reviews(df, file_dir):
     plt.close()
 
 def agg_store(df, file_dir):
+    """
+    Saves a scatter plot for ratings vs number of reviews for stores.
+    :param df: Pandas dataframe containing review and ratings.
+    :param file_dir: String for file dir to save scatter plot.
+    """
     store_grouped = df.groupby("store").agg(
         num_reviews = ("review_id", "nunique"),
         rating = ("rating", "mean")

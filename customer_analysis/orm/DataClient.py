@@ -11,10 +11,9 @@ from sqlalchemy import create_engine, text
 class DataClient:
     """
     Client for extraction and loading of data.
-    Parameters:
-        web (string): Web library for datasets.
-        root (string): Root directory of dataclient.
-        db_connection (string): Connection to postgres database.
+    :param web_connection: Web library for datasets.
+    :param root: Root directory of dataclient.
+    :param db_connection: Connection to postgres database.
     """
     def __init__(self, web_connection:str, root: str, db_connection: str):
         self.web = web_connection
@@ -40,7 +39,9 @@ class DataClient:
         return df
 
     def _insert_items(self, items):
-        """Bulk insert or update items into the database."""
+        """Bulk insert or update items into the database.
+        :param items: List of items as dictionaries.
+        """
         with self.engine.connect() as conn:
             columns = ["parent_asin", "title", "main_category", "store", "average_rating", "rating_number", "price"]
             item_data = [
@@ -73,7 +74,9 @@ class DataClient:
             
 
     def _insert_reviews(self, reviews):
-        """Bulk insert or update reviews into the database."""
+        """Bulk insert or update reviews into the database.
+        :param reviews: List of reviews as dictionaries.
+        """
         columns = ["parent_asin", "rating", "timestamp", "helpful_vote", "verified_purchase", "title", "text"]
         review_data = [
             {
@@ -98,17 +101,22 @@ class DataClient:
 
 
     def populate_database(self, script_path, kwargs):
+        """
+        Populates postgresql database.
+        :param script_path: String for directory to sql script path.
+        :param kwargs: Arguments for reading from library or local.
+        """
         self._run_script(script_path)
-        if kwargs["mode"] == "web":
-            reviews, items = self._read_from_lib(kwargs["category"])
-        else:
-            reviews, items = self._read_from_local(kwargs["file_path"])
+        reviews, items = self._read_from_lib(kwargs["category"])
         self._insert_items(items)
         self._insert_reviews(reviews)
         print("Tables created and populated!")
     
     def query_to_dataframe(self, query, params=None):
-        """Run a query and return a Pandas DataFrame."""
+        """
+        Run a query and return a Pandas DataFrame.
+        :param query: SQL query to run.
+        """
         with self.engine.connect() as conn:
             result = conn.execute(text(query), params or {})
             return pd.DataFrame(result.fetchall(), columns=result.keys())

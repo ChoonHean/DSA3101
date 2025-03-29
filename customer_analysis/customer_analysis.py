@@ -6,7 +6,7 @@ from orm.DataClient import DataClient
 from modules.img_builder import _clean, word_cloud, agg_reviews
 
 ROOT = os.getenv(__file__)
-POPULATE = False
+POPULATE = True
 
 def main():
     #####################

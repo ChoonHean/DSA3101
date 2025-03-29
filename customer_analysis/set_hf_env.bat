@@ -1,2 +1,0 @@
-@echo off
-setx HF_HUB_DISABLE_SYMLINKS_WARNING true /M

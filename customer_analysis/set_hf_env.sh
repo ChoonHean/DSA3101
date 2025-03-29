@@ -1,3 +1,0 @@
-#!/bin/bash
-export HF_HUB_DISABLE_SYMLINKS_WARNING=true
-echo "HF_HUB_DISABLE_SYMLINKS_WARNING set to true"
