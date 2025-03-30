@@ -26,19 +26,19 @@ class CustomImageDataset(Dataset):
 
 # Define any transformations (e.g., resizing, normalization) if needed
 transform = transforms.Compose([
-    transforms.Resize((32, 32)),  # Resize images to 32x32 pixels
-    transforms.ToTensor(),       # Convert images to PyTorch tensors
+    transforms.Resize((32, 32)),  # Resize fashion to 32x32 pixels
+    transforms.ToTensor(),       # Convert fashion to PyTorch tensors
     # Add more transformations as needed
 ])
 
 # Initialize the custom dataset
-dataset = CustomImageDataset(image_folder='dataset/images', transform=transform)
+dataset = CustomImageDataset(image_folder='dataset/fashion', transform=transform)
 
 # Step 3: Initialize ImageDataLoader
 loader = ImageDataLoader(data=dataset, height=32, width=32)
 
 
-Plugins(categories = ["images"]).list()
+Plugins(categories = ["fashion"]).list()
 syn_model = Plugins().get("image_cgan")
 syn_model.patience_metric = None
 syn_model.fit(loader)

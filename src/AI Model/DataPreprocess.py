@@ -6,13 +6,13 @@ from PIL import Image
 from io import BytesIO
 
 
-images = pd.read_parquet("dataset/fashion_meta.gzip")["images"]
+images = pd.read_parquet("dataset/fashion_meta.gzip")["fashion"]
 
 def amazon_url(images):
     """
     This function ensures that all the item has all image variants while maximizing the resolution of all the photos
     :param images: list of amazon item dictionary (Series object)
-    :return: list of "url array" for all the images
+    :return: list of "url array" for all the fashion
     """
     def get_url(image):
         hi_res = image["hi_res"]
@@ -28,8 +28,8 @@ image_urls = amazon_url(images)
 # The following line ensures that there's no None element inside any of the urls
 print(sum(map(lambda x: None in x, image_urls)))
 
-# Define a function to download images
-def download_images(url_list, save_dir="dataset/images"):
+# Define a function to download fashion
+def download_images(url_list, save_dir="dataset/fashion"):
     os.makedirs(save_dir, exist_ok=True)
     image_paths = []
 
@@ -46,6 +46,6 @@ def download_images(url_list, save_dir="dataset/images"):
 
     return image_paths
 
-# Download images and get file paths
+# Download fashion and get file paths
 image_paths = download_images(image_urls)
 

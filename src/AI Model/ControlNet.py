@@ -193,8 +193,8 @@ image = pipeline(prompt = prompt, image = image_inpainting, mask_image = mask_im
 
 
 if __name__ == "__main__":
-    sock = Image.open("../../dataset/images/image_6.jpg")
-    sock_mask = Image.open("../../dataset/images/sock_mask.jpg")
+    sock = Image.open("../../dataset/fashion/image_6.jpg")
+    sock_mask = Image.open("../../dataset/sock_mask.jpg")
     sock = sock.resize((400,400))
     sock_mask = sock_mask.resize((400,400))
     orange_sock_canny = canny_customization(sock, "Orange Sock", verbose = True)
