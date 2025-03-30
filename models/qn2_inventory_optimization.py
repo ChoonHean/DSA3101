@@ -2,7 +2,7 @@ import pandas as pd
 import numpy as np
 from scipy.stats import norm
 
-# Load dataset
+# Load dataset (output from B Q1 Demand Forecasting Model)
 demand_df = pd.read_csv("../dataset/next_year_demand.csv")
 
 # Transform demand_df
@@ -20,6 +20,8 @@ def convert_to_date(year, quarter):
 
 demand_df["date"] = demand_df.apply(lambda row: convert_to_date(row["year"], row["quarter"]), axis=1)
 demand_df = demand_df.drop(columns=["year", "quarter"])
+
+# Calculate Moving Average to smoothen out demand fluctuations
 demand_df['moving_avg_demand'] = demand_df.groupby(by=['cluster_label'])['predicted_demand'].transform(lambda x: x.rolling(window=10, min_periods=1).mean())
 
 demand_df['date'] = pd.to_datetime(demand_df['date'], format="%Y-%m-%d")
@@ -30,7 +32,7 @@ std_dev_demand = demand_df["predicted_demand"].std()
 service_level = 0.95
 z_score = norm.ppf(service_level)
 
-# Create stock_df
+# Generate stock_df
 stock_df = demand_df.copy()
 stock_df = stock_df.groupby("cluster_label").agg({
     "predicted_demand": "sum"
@@ -53,7 +55,11 @@ stock_df = stock_df[[
 def get_quarterly_safety_stock(df_1, df_2, z_score):
     """
         Calculate quarterly safety stock for each cluster using standard deviation
-        of moving average demand and lead time.
+        of moving average demand and lead time. 
+        
+        Terms:
+            Safety stock: acts as buffer against uncertainties in demand and supply
+            Lead Time: Total time taken to receive the good after placing a purchase order
 
         Parameters:
             df_1 (pd.DataFrame): Demand dataframe
@@ -87,7 +93,10 @@ def get_quarterly_safety_stock(df_1, df_2, z_score):
 def get_quarterly_reorder_point(df_1, df_2, z_score):
     """
         Calculate reorder point for each cluster and quarter using:
-        Reorder Point = (Avg Demand × Lead Time) + Safety Stock
+        Reorder Point = (Moving Avg Demand × Lead Time) + Safety Stock
+
+        Terms: 
+            Reorder point: critical stock level that signals the need to reorder
 
         Parameters:
             df_1 (pd.DataFrame): Demand dataframe
@@ -127,6 +136,9 @@ def get_quarterly_eoq(df_1, df_2):
     """
         Calculate EOQ (Economic Order Quantity) for each cluster per quarter.
 
+        Terms:
+            EOQ: Optimal quantity to reorder each time
+
         Parameters:
             df_1 (pd.DataFrame): Demand dataframe
             df_2 (pd.DataFrame): Stock dataframe
@@ -149,7 +161,7 @@ def get_quarterly_eoq(df_1, df_2):
 
 def get_quarterly_restock(df_1, df_2, z_score):
     """
-        Determine which clusters need restocking for each quarter.
+        Determine which clusters need restocking for each quarter. Restock if current stock levels fall below Reorder Point.
 
         Parameters:
             df_1 (pd.DataFrame): Demand dataframe.
@@ -157,7 +169,7 @@ def get_quarterly_restock(df_1, df_2, z_score):
             z_score (float): Z-score for service level.
 
         Returns:
-            pd.DataFrame: Clusters and quarters where restocking is needed, along with optimal quantity.
+            pd.DataFrame: Clusters and quarters where restocking is needed, along with optimal quantity to restock.
     """
     reorder_point_df = get_quarterly_reorder_point(df_1, df_2, z_score)[['cluster_label', 'year_quarter', 'reorder_point']]
     eoq_df = get_quarterly_eoq(df_1, df_2)[['cluster_label', 'year_quarter', 'optimal_qty']]
