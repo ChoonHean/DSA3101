@@ -5,5 +5,4 @@ __pycache__/
 
 # customer_analysis
 *.gzip
-*.jpg
 base/
