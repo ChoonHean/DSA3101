@@ -6,17 +6,31 @@ warnings.simplefilter(action="ignore", category=FutureWarning)
 
 
 class InventoryReinforcementLearning(GreedyQLearning):
+    """
+        A Reinforcement Learning model that builds on the abstract base class GreedyQLearning
+        with concrete implementations for extract_possible_actions and observe_reward_value.
+        It outputs an action to take either to restock or not, and receives a reward for taking that action.
+        In this case, it would be the cost of storing items in a warehouse if it restocks,
+        or the loss if the model does not restock and there are more orders than stock,
+        leading to orders that cannot be fulfilled. It will then update its Q-table and output the
+        next action to take, either to maximize profits from known state-action pairs or explore alternative
+        actions that might lead to more rewards.
+
+        This current model only outputs whether to restock or not, and does not yet output how much to restock.
+        That could be a possible future improvement but requires even more data as it means that there are more possible
+        actions, leading to a larger state-action space which requires more exploration for the model to work optimally.
+        Therefore, for a start, the amount to restock is not yet included, only a binary option to restock or not.
+        """
     def __init__(self):
         super().__init__()
         self.set_alpha_value(1.0)
 
     def learn(self, state_key, limit=1000):
         """
-        Learning and searching the optimal solution.
-
-        Args:
-            state_key:      Initial state.
-            limit:          The maximum number of iterative updates based on value iteration algorithms.
+        Learning and searching the optimal solution. This is taken from the source code for pyqlearning, but some lines
+        have been adapted for this specific use case, hence requiring the method to be overriden for this use case.
+        :param state_key: Initial state.
+        :param limit: The maximum number of iterative updates based on value iteration algorithms.
         """
         self.t = 1
         while self.t <= limit:
@@ -93,3 +107,10 @@ class InventoryReinforcementLearning(GreedyQLearning):
             if state_key < 0:  # Penalty for not having enough stock to fulfil orders
                 reward = -5
         return reward, state_key if state_key > 0 else 10
+
+if __name__ == "__main__":
+    rl = InventoryReinforcementLearning()
+    rl.learn()
+    # The printed Q-table should show the better action to take, restock or not, at when the stock is at a certain level.
+    # This should show that the lower the stock, the more likely restocking is better than not. With actual costs
+    # returned as the reward, the model should learn the optimal threshold where restocking is better than to not.
