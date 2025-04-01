@@ -5,3 +5,4 @@ tqdm~=4.67.1
 sentence-transformers~=3.4.1
 nltk~=3.9.1
 vaderSentiment>=3.3.2
+joblib
