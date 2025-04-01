@@ -1,8 +1,9 @@
 # Global files
 __pycache__/
 *.ipynb_checkpoints
+/data 
+
+# customer_analysis
 *.gzip
-
-
-# Personal files
+*.jpg
 base/
