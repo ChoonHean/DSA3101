@@ -3,6 +3,25 @@ import pandas as pd
 import joblib
 
 def preprocess(df):
+    """
+    Preprocesses the input DataFrame for time-series demand forecasting.
+
+    This function prepares the dataset by:
+    - Sorting data chronologically by cluster, year, and quarter
+    - Creating a continuous time index
+    - Generating lag features for 'num_sales' (1Q to 4Q)
+    - Applying one-hot encoding to 'cluster_label'
+    - Reordering columns so that one-hot encoded columns are at the end
+    - Applying log transformation to 'num_sales'
+    - Filling any missing values (especially in lag columns) with 0
+
+    Parameters:
+        df (pd.DataFrame): Raw input data containing columns 
+                           ['cluster_label', 'year', 'quarter', 'num_sales']
+
+    Returns:
+        pd.DataFrame: Preprocessed DataFrame ready for training or prediction.
+    """
     df = df.sort_values(by=["cluster_label", "year", "quarter"])
     df["time_index"] = df["year"] + (df["quarter"] - 1) / 4.0
 
