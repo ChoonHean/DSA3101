@@ -1,5 +1,4 @@
 import os
-
 import numpy as np
 import pandas as pd
 from sklearn.ensemble import RandomForestRegressor
@@ -45,8 +44,8 @@ def preprocess(df):
     # fill missing values with 0 sales
     df.fillna(0, inplace=True)
 
-    os.makedirs("../raw_data/demand_forecasting", exist_ok=True)
-    df.to_csv("../raw_data/demand_forecasting/random_forest_dataset.csv", index=False)
+    os.makedirs("../group_b/cleaned_data", exist_ok=True)
+    df.to_csv("../cleaned_data/random_forest_dataset.csv", index=False)
     return df
 
 
@@ -83,7 +82,7 @@ def wape(y_test, y_pred):
 
 if __name__ == '__main__':
     # load final training raw_data
-    df = pd.read_csv("../cleaned_data/final_combined_dataset.csv")
+    df = pd.read_csv("../cleaned_data/combined_dataset.csv")
 
     # preprocess data for splitting
     df = preprocess(df=df)
@@ -111,7 +110,7 @@ if __name__ == '__main__':
     y_test_actual = np.expm1(y_test)
 
     # save the trained model for future use
-    joblib.dump(rf_best, "/random_forest_model.joblib")
+    joblib.dump(rf_best, "../demand/random_forest_model.joblib")
 
     # evaluate model performance using weighted absolute percentage error (WAPE)
     wape = wape(y_test_actual, y_pred_actual)
