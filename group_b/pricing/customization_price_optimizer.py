@@ -1,3 +1,4 @@
+import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 
@@ -77,10 +78,10 @@ class CustomizationPriceOptimizer:
         grouped_data = data.groupby("week")
 
         # Extract data points to fit p_x
-        prices_and_proportions = map(
+        prices_and_proportions = sorted(map(
             lambda group: self.extract_cost_and_proportion(group, customization, base_choices),
             grouped_data
-        )
+        ))
         prices, proportions = map(lambda ls: np.array(ls), zip(*prices_and_proportions))
 
         # Normalize customization cost, x
@@ -96,6 +97,11 @@ class CustomizationPriceOptimizer:
             proportions,
             bounds=((-3, -np.inf), (-1, np.inf))
         )
+
+        # Visualize the fitted curve
+        plt.scatter(prices, y=proportions)
+        plt.plot(prices, self.p_x(prices, self.a, self.b))
+        plt.show()
 
         # Normalize customization material cost
         customization_material_cost_normalised = xScaler.transform(
@@ -137,7 +143,8 @@ if __name__ == "__main__":
     print(CustomizationPriceOptimizer().find_optimal_price(
         df,
         'JN_KURTA',
+        'L',
         'color',
         ['White', 'Black'],
-        50
+        0.5
     ))
