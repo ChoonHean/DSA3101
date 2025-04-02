@@ -14,13 +14,13 @@ Each scenario compares our algorithm and a baseline (naive) strategy with simple
 This script generates sample datasets for demand and stock, namely `simulated_demand.csv` and `simulated_stock.csv`, which will be used in the scenario tests.  
 
 2. Run `normal_scenario.py` for the first scenario  
-This script generates a normal demand scenario, which outputs a csv file `comparsion_summary.csv` that compares the results of the naive model and our optimized inventory algorithm.   
+This script generates a normal demand scenario, which outputs a csv file `comparsion_summary.csv` 
 
 3. Run `high_demand_scenario.py` for the second scenario  
-This script generates a high demand scenario, which outputs a csv file `high_demand_comparsion_summary.csv` that compares the results of the naive model and our optimized inventory algorithm.   
+This script generates a high demand scenario, which outputs a csv file `high_demand_comparsion_summary.csv`
 
 4. Run `low_demand_scenario.py` for the third scenario  
-This script generates a low demand scenario, which outputs a csv file `low_demand_comparsion_summary.csv` that compares the results of the naive model and our optimized inventory algorithm.   
+This script generates a low demand scenario, which outputs a csv file `low_demand_comparsion_summary.csv` 
 
 5. Run `random_demand_scenario.py` for the fourth scenario  
-This script generates a random demand scenario, which outputs a csv file `random_demand_comparison_summary.csv` that compares the results of the naive 
+This script generates a random demand scenario, which outputs a csv file `random_demand_comparison_summary.csv`
