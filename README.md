@@ -1,6 +1,6 @@
 ## Project 5: AI-Driven Merchandise Customization Platform for E-commerce
 
----
+
 
 ### Overview
 
@@ -10,7 +10,7 @@ However, traditional methods of inventory management and product customization h
 E-commerce platforms typically rely on pre-made product images and static inventory, which restricts customers' ability
 to customize items according to their preferences.
 This leads to challenges in customer satisfaction, missed sales opportunities, and inefficient use of resources.
----
+
 
 ### Repository Structure
 
@@ -47,8 +47,6 @@ This leads to challenges in customer satisfaction, missed sales opportunities, a
 
 ## Data Fields
 
-### For User Reviews
-
 | Field             | Type  | Description                                                                                                                                                                                         |
 |:------------------|-------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | rating            | float | Rating of the product (from 1.0 to 5.0).                                                                                                                                                            |
@@ -80,3 +78,7 @@ This leads to challenges in customer satisfaction, missed sales opportunities, a
  details         | dict  | Product details, including materials, brand, sizes, etc.                                                                       |
 | parent_asin     | str   | Parent ID of the product.                                                                                                      |
 | bought_together | list  | Recommended bundles from the websites.                                                                                         |
+
+### **Table Relationships**
+- **`reviews.parent_asin`** → **FK → `items.parent_asin`**  
+  (Each review is associated with an item.)
