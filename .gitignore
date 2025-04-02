@@ -1,6 +1,7 @@
 # Global files
 __pycache__/
 *.ipynb_checkpoints
+.idea
 
 # customer_analysis
 *.gzip
