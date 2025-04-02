@@ -7,10 +7,9 @@ scope of this would be limited to Amazon fashion.
 
 ## How to run
 
-Download postgresql and create a database ![here](https://www.postgresql.org/)
+Download postgresql and create a database [here](https://www.postgresql.org/)
 
 ```
-pip install -r requirements.txt
 python customer_anlysis.py
 ```
 
@@ -24,7 +23,7 @@ Our insights are present in ```report.md```.
 ## Raw data schema
 
 For each item, there would be a corresponding review, as well as a corresponding metadata attached to it. The structure
-of the data obtained would be as follows. ![structure](https://amazon-reviews-2023.github.io/)
+of the data obtained would be as follows. [structure](https://amazon-reviews-2023.github.io/)
 
 ## Database Schema
 
