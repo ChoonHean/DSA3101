@@ -11,7 +11,7 @@ def dataset_to_dataframe(dataset):
     """
     return pd.DataFrame({column:dataset[column] for column in dataset.column_names})
 
-
+# Load in the dataset using HuggingFace
 dataset = load_dataset("McAuley-Lab/Amazon-Reviews-2023", "raw_review_Amazon_Fashion", trust_remote_code=True)["full"]
 metadata = load_dataset("McAuley-Lab/Amazon-Reviews-2023", "raw_meta_Amazon_Fashion", trust_remote_code=True)["full"]
 fashion_review = dataset_to_dataframe(dataset)
