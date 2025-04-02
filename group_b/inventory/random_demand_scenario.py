@@ -25,8 +25,6 @@ naive_results_df = apply_naive_inventory_strategy(demand_df, stock_df)
 
 print(naive_results_df.head())
 
-# Save results if needed
-# naive_results_df.to_csv("../raw_data/random_demand_naive_inventory_results.csv", index=False)
 
 # Apply our algo
 service_level = 0.95
@@ -35,9 +33,6 @@ z_score = norm.ppf(service_level)
 algo_result_df = get_quarterly_restock(demand_df, stock_df, z_score)
 
 print(algo_result_df.head())
-
-# Save results if needed
-# algo_result_df.to_csv("../raw_data/random_demand_algo_result.csv", index=False)
 
 
 # Make comparison

@@ -17,6 +17,8 @@ This leads to challenges in customer satisfaction, missed sales opportunities, a
 | Folder/File                     | Description                                          |
 |---------------------------------|------------------------------------------------------|
 | `group_a`                       | Group A code                                         |
+| `group_a/gen_ai`                | Contains scripts for image synthesis                 |
+| `group_a/customer_satisfaction` | Contains scripts for analysing customer satisfaction |
 | `group_b`                       | Group B code                                         |
 | `group_b/data`                  | Clean and transformed data for use in Group B's code |
 | `group_b/data_cleaning_scripts` | Scripts used to clean and transform the raw data     |
