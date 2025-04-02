@@ -82,6 +82,7 @@ def save_cluster_content(num_clusters, clusters, features, top_n=10):
     feature_names = vectorizer.get_feature_names_out()
     top_words_per_cluster = get_top_words_per_cluster(tfidf_matrix, num_clusters, clusters, feature_names, top_n=10)
     df_clusters = pd.DataFrame.from_dict(top_words_per_cluster, orient="index")
+    os.makedirs("../dataset/others", exist_ok=True)
     df_clusters.to_csv(f"../dataset/others/top_words_for_{num_clusters}.csv")
 
 
@@ -142,6 +143,7 @@ if __name__ == "__main__":
         save_cluster_content(num_clusters, cluster_labels, df_meta['title_lemma'], top_n=10)
 
         logging.info("Save the processed dataset")
+        os.makedirs("../dataset/cleaned_data", exist_ok=True)
         output_path = os.path.abspath(f"../dataset/cleaned_data/cleaned_metadata_{num_clusters}_clusters.csv")
         df_meta.to_csv(output_path, index=False)
 
