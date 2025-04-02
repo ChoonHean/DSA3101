@@ -13,6 +13,7 @@ class PriceReinforcementLearning(GreedyQLearning):
     next action to take, either to maximize profits from known state-action pairs or explore alternative
     actions that might lead to more rewards.
     """
+
     def __init__(self):
         super().__init__()
         self.set_alpha_value(0.8)
@@ -45,9 +46,10 @@ class PriceReinforcementLearning(GreedyQLearning):
         super().learn(a, limit)
         print(self.q_df.sort_values("q_value", ascending=False))
 
+
 if __name__ == "__main__":
     rl = PriceReinforcementLearning()
-    rl.learn()
+    rl.learn(5)
     # Since the reward is 5 - action_key, the reward should be higher when the action_key is lower.
     # The printed Q-table should show that lower action_keys have higher Q-values, with higher Q-values
     # indiciating higher expected rewards for taking that action.

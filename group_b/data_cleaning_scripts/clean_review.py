@@ -3,6 +3,7 @@ import pandas as pd
 import re
 from vaderSentiment.vaderSentiment import SentimentIntensityAnalyzer
 
+
 def remove_url(text: str) -> str:
     """
     Remove url from review text.
@@ -12,6 +13,7 @@ def remove_url(text: str) -> str:
     """
     url_pattern = r'http\S+|www\S+|https\S+'
     return re.sub(url_pattern, '', text)
+
 
 def get_vader_sentiment(text):
     """
@@ -23,9 +25,10 @@ def get_vader_sentiment(text):
     sentiment = analyzer.polarity_scores(text)
     return round(sentiment['compound'] * 2 + 3, 1)
 
+
 if __name__ == "__main__":
     # Load raw_data and select columns
-    df_review = pd.read_json("../raw_data/raw_data/Amazon_Fashion.jsonl", lines=True)
+    df_review = pd.read_json("../../raw_data/Amazon_Fashion.jsonl", lines=True)
     useful_columns = ['rating', 'title', 'text', 'parent_asin', 'timestamp', 'verified_purchase']
     df_review = df_review[useful_columns]
 
@@ -53,5 +56,5 @@ if __name__ == "__main__":
     print(df_review.head())
 
     # Save the data into csv
-    os.makedirs("../cleaned_data", exist_ok=True)
-    df_review.to_csv("../raw_data/cleaned_data/review.csv", index=False)
+    os.makedirs("../data", exist_ok=True)
+    df_review.to_csv("../data/review.csv", index=False)

@@ -1,6 +1,7 @@
 import joblib
 import pandas as pd
 
+
 def get_baseprice_pct(parameters):
     """
     Calculate the suggested price adjustment percentage for a product cluster 
@@ -11,12 +12,13 @@ def get_baseprice_pct(parameters):
     :return: Suggested price adjustment as a decimal (e.g., 0.05 for +5% increase).
     """
     # Load model
-    demand_forecast_model = joblib.load("random_forest_model.joblib")
+    demand_forecast_model = joblib.load("../demand/random_forest_model.joblib")
     # Obtain forecasted demand
     forecasted_demand = demand_forecast_model.predict(parameters)[0]
 
     # Obtain baseline demand
-    baseline_demand = parameters[['num_sales_lag_1Q', 'num_sales_lag_2Q', 'num_sales_lag_3Q', 'num_sales_lag_4Q']].sum().sum() / 4
+    baseline_demand = parameters[['num_sales_lag_1Q', 'num_sales_lag_2Q', 'num_sales_lag_3Q',
+                                  'num_sales_lag_4Q']].sum().sum() / 4
 
     # Calculate percentage difference from baseine demand
     demand_diff = (forecasted_demand - baseline_demand) / baseline_demand
@@ -26,6 +28,7 @@ def get_baseprice_pct(parameters):
     price_change = round(max(min(price_change, 0.25), -0.25) / 0.005) * 0.005
 
     return price_change
+
 
 def get_parameters(cluster, year, quarter):
     """
@@ -37,7 +40,7 @@ def get_parameters(cluster, year, quarter):
     :return: Suggested price adjustment as a decimal (e.g., 0.05 for +5% increase).
     """
     # Load data set
-    df = pd.read_csv("../datasets/random_forest_dataset.csv")
+    df = pd.read_csv("../data/random_forest_dataset.csv")
 
     # Get time_index of previous quarter
     time_index = year + (quarter - 1) / 4
@@ -52,6 +55,7 @@ def get_parameters(cluster, year, quarter):
     parameters = parameters.drop(columns=['num_sales'])
 
     return parameters
+
 
 if __name__ == '__main__':
     # Inputs
