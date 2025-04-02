@@ -179,32 +179,18 @@ def inpainting_customization(image, mask_image, prompt, image_inpainting = None,
     return output
 
 
-# Using image as an inpainting
-# def image_inpainting(image, mask_image, image_inpainting, prompt, verbose = False):
-#     pipeline = AutoPipelineForInpainting.from_pretrained(
-#         "stabilityai/stable-diffusion-xl-refiner-1.0", torch_dtype=torch.float32
-#     )
-#     image = pipeline(prompt=prompt, image=image_inpainting, mask_image=mask_image, output_type="latent").images[0]
-#
-#     # Second layer of pipeline
-#     pipeline = AutoPipelineForImage2Image.from_pipe(pipeline)
-#     image = pipeline(prompt=prompt, image=image).images[0]
-#
-#
-#     return
-#
-# pipeline = AutoPipelineForInpainting.from_pretrained(
-#     "stabilityai/stable-diffusion-xl-refiner-1.0", torch_dtype=torch.float32
-# )
-# pipeline.enable_xformers_memory_efficient_attention()
-# image = pipeline(prompt = prompt, image = image_inpainting, mask_image = mask_image, output_type = "latent").images[0]
-
-
 if __name__ == "__main__":
+
+    # Read in the image and mask image from the dataset
     sock = Image.open("../dataset/fashion/image_6.jpg")
     sock_mask = Image.open("../dataset/sock_mask.jpg")
+
+    # Resize it to hasten process
     sock = sock.resize((400,400))
+    # The mask image must have the same size as the original image
     sock_mask = sock_mask.resize((400,400))
+
+    # Different types of model produce totally different types of results
     orange_sock_canny = canny_customization(sock, "Orange Sock", verbose = True)
     orange_sock_depth = depth_customization(sock, "Orange sock", verbose = True)
     orange_sock_inpaint = inpainting_customization(sock, sock_mask, "Yellow Stripes", verbose=True)
