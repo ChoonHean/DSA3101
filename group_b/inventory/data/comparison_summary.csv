@@ -1,0 +1,3 @@
+Model,Total Unmet Demand,Stockout Rate (%),Service Level (%),Total Ordering Cost,Avg Holding Cost
+Our Algorithm,12.0,2.5,97.5,172532.0,377.72
+Naive Strategy,868.0,60.0,40.0,0.0,62.79
