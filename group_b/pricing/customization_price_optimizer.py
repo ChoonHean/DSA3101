@@ -133,7 +133,7 @@ class CustomizationPriceOptimizer:
 
 
 if __name__ == "__main__":
-    df = pd.read_csv("../raw_data/cleaned_data/amazon_fashion_sales.csv")
+    df = pd.read_csv("../data/amazon_fashion_sales.csv")
     print(CustomizationPriceOptimizer().find_optimal_price(
         df,
         'JN_KURTA',
