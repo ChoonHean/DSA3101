@@ -24,3 +24,13 @@
 4. Change the prompts to see the different effects of it
 5. Run the ```control_net.py``` file and observe the results
 
+# Gen AI model evaluation 
+
+## Overview
+This file `img2imggen_evaluation.py` evaluates the ability of the Stable Diffusion Img2Img model to modify images in response to specific prompts. The code allows for several types of modifications, including adding logos, changing the color or size of products, adding text, and altering the material or texture of the items. The notebook also performs evaluations using CLIP and LPIPS metrics to assess the quality of the generated images.
+
+## Model Used
+The model used for image modifications is the Stable Diffusion `Img2Img` pipeline from Hugging Face. Specifically, the model ID `CompVis/stable-diffusion-v1-4` is used to load the model. This pipeline is leveraged to perform various image transformations based on the textual prompts provided.
+
+## Evaluation 
+The code evaluates the modifications using CLIP and LPIPS scores where CLIP will provide a similarity score between the image and the prompt, while LPIPS will give the perceptual distance between the original and modified images, indicating how similar the images are.
