@@ -15,7 +15,7 @@ Due to heavy computational costs (due to the use of LLMS), we would randomly sam
 
 ## What to look out for customer satisfaction?
 
-![Rating vs Review count](https://github.com/ChoonHean/DSA3101/customer_analysis/exports/rating_reviewcount.png)
+![Rating vs Review count](./exports/rating_reviewcount.png)
 
 **Interpretation**:  
 Most of the stores have a pretty high review ratings (around 4-4.5). For stores with a large number of ratings, it can be seen that they have very good ratings as well. This makes sense to us as customers would continue to stick with stores that are well-received by others.
@@ -24,8 +24,8 @@ Most of the stores have a pretty high review ratings (around 4-4.5). For stores 
 
 ## What do customers usually say?
 
-![Good generally](https://github.com/ChoonHean/DSA3101/customer_analysis/exports/wordcloud_all_right.png)
-![Bad generally](https://github.com/ChoonHean/DSA3101/customer_analysis/exports/wordcloud_all_left.png)
+![Good generally](./exports/wordcloud_all_right.png)
+![Bad generally](./exports/wordcloud_all_left.png)
 
 **Interpretation**:  
 Most of customers' concerns are focused on the quality of the products. The emphasis seems to be placed more on the product itself, compared to miscellaneous factors like features of the commercial platform.
@@ -34,13 +34,13 @@ Most of customers' concerns are focused on the quality of the products. The emph
 
 ## What are customers most concerned about?
 
-![Reviews by category](https://github.com/ChoonHean/DSA3101/customer_analysis/exports/reviews_by_category.png)
+![Reviews by category](./exports/reviews_by_categories.png)
 
 Most reviews tend to focus on product quality rather than other factors. To enhance customer satisfaction more effectively, we suggest that commercial platforms implement stricter policies to regulate the sellers they permit on their platform. The following factors can serve as a guideline for commercial platforms to monitor in order to maintain product quality.
 
 ### Now lets look at what customers say in the most important categories
-![PV Good](https://github.com/ChoonHean/DSA3101/customer_analysis/exports/wordcloud_price_value_right.png)
-![PV Bad](https://github.com/ChoonHean/DSA3101/customer_analysis/exports/wordcloud_price_value_left.png)
+![PV Good](./exports/wordcloud_price_value_right.png)
+![PV Bad](./exports/wordcloud_price_value_left.png)
 
 **Interpretation**:  
 Size is a key factor that customers consider when making a purchase. We define quality as the material used in the product, which significantly impacts customer satisfaction. To ensure this, commercial platforms must prioritize ethical and reputable sellers. Upholding this standard of quality can serve as a unique selling point, boosting both customer retention and satisfaction.
@@ -61,14 +61,14 @@ Based on the analysis and the visualizations, we can conclude that:
 
 5. Review Focus: Reviews mainly emphasize product quality over other factors, indicating that product-related concerns are the primary focus for customers.
 
-Further analysis may include [next steps or possible extensions].
+Further analysis may include clustering based on domain-specific features depending on stakeholder priorities (e.g. Product aesthetics).
 
 ---
 
 ## References and Tools used
 
-- ![Hugging face](https://huggingface.co/) transformers for text processing/classification.
-- ![PostgreSQL](https://www.postgresql.org/) database for handling review product relationships.
+- [Hugging face](https://huggingface.co/) transformers for text processing/classification.
+- [PostgreSQL](https://www.postgresql.org/) database for handling review product relationships.
 
 ---
 
