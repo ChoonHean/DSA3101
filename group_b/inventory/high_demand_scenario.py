@@ -46,4 +46,4 @@ comparison = compare_inventory_models(algo_result_df, naive_results_df, stock_df
 print(comparison)
 
 # Save results
-comparison.to_csv("../data/high_demand_comparison_summary.csv", index=False)
+comparison.to_csv("data/high_demand_comparison_summary.csv", index=False)
