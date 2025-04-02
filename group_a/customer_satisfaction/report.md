@@ -34,7 +34,7 @@ Most of customers' concerns are focused on the quality of the products. The emph
 
 ## What are customers most concerned about?
 
-![Reviews by category](./exports/reviews_by_category.png)
+![Reviews by category](./exports/reviews_by_categories.png)
 
 Most reviews tend to focus on product quality rather than other factors. To enhance customer satisfaction more effectively, we suggest that commercial platforms implement stricter policies to regulate the sellers they permit on their platform. The following factors can serve as a guideline for commercial platforms to monitor in order to maintain product quality.
 
@@ -61,7 +61,7 @@ Based on the analysis and the visualizations, we can conclude that:
 
 5. Review Focus: Reviews mainly emphasize product quality over other factors, indicating that product-related concerns are the primary focus for customers.
 
-Further analysis may include [next steps or possible extensions].
+Further analysis may include clustering based on domain-specific features depending on stakeholder priorities (e.g. Product aesthetics).
 
 ---
 
