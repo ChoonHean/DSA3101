@@ -1,5 +1,10 @@
 # GenAI model usage
 
+## Download Dataset
+1. Download the meta dataset for the Fashion Category: Run ```AmazonProduct.py```. You should see ```fashion_meta.gzip``` under ```dataset``` after the script finished running 
+2. Download images from the first 3 product of Fashion dataset: Run ```DataPreprocess.py```. Check for images in ```dataset\fashion```
+
+
 ## There're in total 3 functions offering different customization of the variables
 1. ```canny_customization``` It uses the canny image of an image to generate customized image
 2. ```depth_customization``` It uses the depth map of an image to generate customized image
