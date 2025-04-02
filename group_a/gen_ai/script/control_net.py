@@ -7,15 +7,16 @@ import numpy as np
 from PIL import Image
 from transformers import pipeline
 from diffusers.utils import load_image, make_image_grid
-from diffusers import StableDiffusionControlNetPipeline, StableDiffusionControlNetImg2ImgPipeline, StableDiffusionControlNetInpaintPipeline, ControlNetModel, UniPCMultistepScheduler, AutoPipelineForInpainting, AutoPipelineForImage2Image
-
-
+from diffusers import StableDiffusionControlNetPipeline, StableDiffusionControlNetImg2ImgPipeline, \
+    StableDiffusionControlNetInpaintPipeline, ControlNetModel, UniPCMultistepScheduler, AutoPipelineForInpainting, \
+    AutoPipelineForImage2Image
 
 # Use to suppress the warning: Future Warning that exists when using the ControlNetModel
-warnings.simplefilter(action = "ignore", category=FutureWarning)
+warnings.simplefilter(action="ignore", category=FutureWarning)
+
 
 # Customized the image using its canny image
-def canny_customization(image, prompt, low_threshold = 100, high_threshold = 200, verbose = False):
+def canny_customization(image, prompt, low_threshold=100, high_threshold=200, verbose=False):
     """
     :param np_image: Pillow Image object
     :param prompt: The change to made to the image
@@ -54,14 +55,13 @@ def canny_customization(image, prompt, low_threshold = 100, high_threshold = 200
         pipe_depth = pipe_depth.to("cpu")
 
     output = pipe_depth(
-        prompt, image = canny_image
+        prompt, image=canny_image
     ).images[0]
 
     if verbose:
-        return make_image_grid([np_image, canny_image, output], rows = 1, cols = 3)
+        return make_image_grid([np_image, canny_image, output], rows=1, cols=3)
 
     return output
-
 
 
 # Using Depth Map as input to the customization model
@@ -76,8 +76,9 @@ def get_depth_map(image, depth_estimator):
     depth_map = detected_map.permute(2, 0, 1)
     return depth_map
 
+
 # Utizlize depth map to customize the image
-def depth_customization(image, prompt, verbose = False):
+def depth_customization(image, prompt, verbose=False):
     """
     :param image: Pillow Image object
     :param prompt: The change to made to the image
@@ -97,11 +98,11 @@ def depth_customization(image, prompt, verbose = False):
     if not gpu:
         weight_dtype = torch.float32
 
-
     if "controlnet_depth" not in globals():
         global controlnet_depth
-        controlnet_depth = ControlNetModel.from_pretrained("lllyasviel/control_v11f1p_sd15_depth", torch_dtype=weight_dtype,
-            use_safetensors=True)
+        controlnet_depth = ControlNetModel.from_pretrained("lllyasviel/control_v11f1p_sd15_depth",
+                                                           torch_dtype=weight_dtype,
+                                                           use_safetensors=True)
         global pipe_depth
         pipe_depth = StableDiffusionControlNetPipeline.from_pretrained(
             "stable-diffusion-v1-5/stable-diffusion-v1-5", controlnet=controlnet_depth, torch_dtype=weight_dtype,
@@ -125,7 +126,6 @@ def depth_customization(image, prompt, verbose = False):
     return output
 
 
-
 def make_inpaint_condition(image, image_mask):
     image = np.array(image.convert("RGB")).astype(np.float32) / 255.0
     image_mask = np.array(image_mask.convert("L")).astype(np.float32) / 255.0
@@ -136,8 +136,9 @@ def make_inpaint_condition(image, image_mask):
     image = torch.from_numpy(image)
     return image
 
+
 # Use inpainting feature to customize the image:
-def inpainting_customization(image, mask_image, prompt, image_inpainting = None, verbose = False):
+def inpainting_customization(image, mask_image, prompt, image_inpainting=None, verbose=False):
     """
     :param image: Pillow Image object
     :param mask_image: Pillow Image object, contains the white colour as the area to be inpaint using black background
@@ -154,7 +155,7 @@ def inpainting_customization(image, mask_image, prompt, image_inpainting = None,
     if "controlnet_inpainting" not in globals():
         global controlnet_inpainting
         controlnet_inpainting = ControlNetModel.from_pretrained("lllyasviel/control_v11p_sd15_inpaint",
-            torch_dtype=weight_dtype, use_safetensors=True)
+                                                                torch_dtype=weight_dtype, use_safetensors=True)
         global pipe_inpainting
         pipe_inpainting = StableDiffusionControlNetInpaintPipeline.from_pretrained(
             "stable-diffusion-v1-5/stable-diffusion-v1-5", controlnet=controlnet_inpainting, torch_dtype=weight_dtype,
@@ -180,18 +181,16 @@ def inpainting_customization(image, mask_image, prompt, image_inpainting = None,
 
 
 if __name__ == "__main__":
-
     # Read in the image and mask image from the dataset
     sock = Image.open("../dataset/fashion/image_6.jpg")
     sock_mask = Image.open("../dataset/sock_mask.jpg")
 
     # Resize it to hasten process
-    sock = sock.resize((400,400))
+    sock = sock.resize((400, 400))
     # The mask image must have the same size as the original image
-    sock_mask = sock_mask.resize((400,400))
+    sock_mask = sock_mask.resize((400, 400))
 
     # Different types of model produce totally different types of results
-    orange_sock_canny = canny_customization(sock, "Orange Sock", verbose = True)
-    orange_sock_depth = depth_customization(sock, "Orange sock", verbose = True)
+    orange_sock_canny = canny_customization(sock, "Orange Sock", verbose=True)
+    orange_sock_depth = depth_customization(sock, "Orange sock", verbose=True)
     orange_sock_inpaint = inpainting_customization(sock, sock_mask, "Yellow Stripes", verbose=True)
-
