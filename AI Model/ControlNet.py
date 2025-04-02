@@ -138,6 +138,14 @@ def make_inpaint_condition(image, image_mask):
 
 # Use inpainting feature to customize the image:
 def inpainting_customization(image, mask_image, prompt, image_inpainting = None, verbose = False):
+    """
+    :param image: Pillow Image object
+    :param mask_image: Pillow Image object, contains the white colour as the area to be inpaint using black background
+    :param prompt: The change to made to the image
+    :param image_inpainting: Pillow Image to be inpaint in the mask_image area.
+    :param verbose: Binary, Default to be False. Return the original image, mask_image and the customized image if True, return only the original image if false
+    :return: A Pillow Image object with changes according to prompt
+    """
     gpu = torch.cuda.is_available()
     weight_dtype = torch.float16
 
@@ -172,24 +180,24 @@ def inpainting_customization(image, mask_image, prompt, image_inpainting = None,
 
 
 # Using image as an inpainting
-def image_inpainting(image, mask_image, image_inpainting, prompt, verbose = False):
-    pipeline = AutoPipelineForInpainting.from_pretrained(
-        "stabilityai/stable-diffusion-xl-refiner-1.0", torch_dtype=torch.float32
-    )
-    image = pipeline(prompt=prompt, image=image_inpainting, mask_image=mask_image, output_type="latent").images[0]
-
-    # Second layer of pipeline
-    pipeline = AutoPipelineForImage2Image.from_pipe(pipeline)
-    image = pipeline(prompt=prompt, image=image).images[0]
-
-
-    return
-
-pipeline = AutoPipelineForInpainting.from_pretrained(
-    "stabilityai/stable-diffusion-xl-refiner-1.0", torch_dtype=torch.float32
-)
-pipeline.enable_xformers_memory_efficient_attention()
-image = pipeline(prompt = prompt, image = image_inpainting, mask_image = mask_image, output_type = "latent").images[0]
+# def image_inpainting(image, mask_image, image_inpainting, prompt, verbose = False):
+#     pipeline = AutoPipelineForInpainting.from_pretrained(
+#         "stabilityai/stable-diffusion-xl-refiner-1.0", torch_dtype=torch.float32
+#     )
+#     image = pipeline(prompt=prompt, image=image_inpainting, mask_image=mask_image, output_type="latent").images[0]
+#
+#     # Second layer of pipeline
+#     pipeline = AutoPipelineForImage2Image.from_pipe(pipeline)
+#     image = pipeline(prompt=prompt, image=image).images[0]
+#
+#
+#     return
+#
+# pipeline = AutoPipelineForInpainting.from_pretrained(
+#     "stabilityai/stable-diffusion-xl-refiner-1.0", torch_dtype=torch.float32
+# )
+# pipeline.enable_xformers_memory_efficient_attention()
+# image = pipeline(prompt = prompt, image = image_inpainting, mask_image = mask_image, output_type = "latent").images[0]
 
 
 if __name__ == "__main__":
