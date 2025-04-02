@@ -44,7 +44,7 @@ def preprocess(df):
     # fill missing values with 0 sales
     df.fillna(0, inplace=True)
 
-    os.makedirs("../group_b/cleaned_data", exist_ok=True)
+    os.makedirs("../cleaned_data", exist_ok=True)
     df.to_csv("../cleaned_data/random_forest_dataset.csv", index=False)
     return df
 
