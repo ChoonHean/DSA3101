@@ -1,3 +1,5 @@
+import os
+
 import numpy as np
 import pandas as pd
 from sklearn.ensemble import RandomForestRegressor
@@ -43,6 +45,7 @@ def preprocess(df):
     # fill missing values with 0 sales
     df.fillna(0, inplace=True)
 
+    os.makedirs("../dataset/demand_forecasting", exist_ok=True)
     df.to_csv("../dataset/demand_forecasting/random_forest_dataset.csv", index=False)
     return df
 
