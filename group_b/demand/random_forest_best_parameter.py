@@ -6,7 +6,7 @@ from random_forest_train import preprocess, split_train_test, wape
 
 if __name__ == '__main__':
     # load raw_data
-    df = pd.read_csv("../cleaned_data/final_combined_dataset.csv")
+    df = pd.read_csv("../cleaned_data/combined_dataset.csv")
 
     # preprocess data for splitting
     df = preprocess(df=df)
