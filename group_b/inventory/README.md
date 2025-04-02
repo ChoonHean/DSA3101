@@ -4,7 +4,7 @@
 To reproduce the inventory optimization logic :  
 
 1. Navigate to **group_b/inventory** folder
-2. Run `qn2_inventory_optimization.py`  
+2. Run `inventory_optimization.py`  
 This script loads the forecasted demand from the demand forecasting model `next_year_demand.csv` and simulates an optimized inventory strategy. The output would be a csv file `quarterly_stock_list.csv` that contains the list of products to be restocked.   
 
 To evaluate the performance of our inventory management algorithm under different business environments, we designed a set of simulation-based scenario tests.  
