@@ -3,11 +3,10 @@ import os
 import pandas as pd
 from itertools import product
 
-
 if __name__ == "__main__":
     # Load cleaned metadata and review datasets
-    df_final_metadata = pd.read_csv("../cleaned_data/metadata.csv")
-    df_final_review = pd.read_csv("../cleaned_data/review.csv")
+    df_final_metadata = pd.read_csv("../data/metadata.csv")
+    df_final_review = pd.read_csv("../data/review.csv")
 
     df_combined = df_final_metadata.merge(df_final_review, on=["parent_asin"], how="left")
 
@@ -53,6 +52,5 @@ if __name__ == "__main__":
     print(df_final.head())
 
     # save the final data into csv
-    os.makedirs("../cleaned_data", exist_ok=True)
-    df_final.to_csv("../raw_data/cleaned_data/final_combined_dataset.csv", index=False)
-
+    os.makedirs("../data", exist_ok=True)
+    df_final.to_csv("../raw_data/data/final_combined_dataset.csv", index=False)

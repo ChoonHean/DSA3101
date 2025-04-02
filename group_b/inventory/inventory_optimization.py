@@ -3,7 +3,7 @@ import numpy as np
 from scipy.stats import norm
 
 # Load raw_data (output from B Q1 Demand Forecasting Model)
-demand_df = pd.read_csv("../../raw_data/next_year_demand.csv")
+demand_df = pd.read_csv("../data/next_year_demand.csv")
 
 # Transform demand_df
 def convert_to_date(year, quarter):
@@ -22,7 +22,8 @@ demand_df["date"] = demand_df.apply(lambda row: convert_to_date(row["year"], row
 demand_df = demand_df.drop(columns=["year", "quarter"])
 
 # Calculate Moving Average to smoothen out demand fluctuations
-demand_df['moving_avg_demand'] = demand_df.groupby(by=['cluster_label'])['predicted_demand'].transform(lambda x: x.rolling(window=10, min_periods=1).mean())
+demand_df['moving_avg_demand'] = demand_df.groupby(by=['cluster_label'])['predicted_demand'].transform(
+    lambda x: x.rolling(window=10, min_periods=1).mean())
 
 demand_df['date'] = pd.to_datetime(demand_df['date'], format="%Y-%m-%d")
 demand_df['year_quarter'] = demand_df['date'].dt.to_period("Q")
@@ -118,16 +119,18 @@ def get_quarterly_reorder_point(df_1, df_2, z_score):
 
     # Create a lead time dataframe: one row per cluster
     lead_time_df = df_2[['cluster_label', 'lead_time_months']].drop_duplicates()
-    
+
     # Convert lead time from months to quarters (round up)
     lead_time_df['lead_time_quarters'] = np.ceil(lead_time_df['lead_time_months'] / 3)
-    
+
     # Merge this info into reorder_df based on cluster_label
-    reorder_df = pd.merge(reorder_df, lead_time_df[['cluster_label', 'lead_time_quarters']], on='cluster_label', how='left')
+    reorder_df = pd.merge(reorder_df, lead_time_df[['cluster_label', 'lead_time_quarters']], on='cluster_label',
+                          how='left')
     reorder_df['lead_time_quarters'] = reorder_df['lead_time_quarters'].fillna(1)
 
     # Calculate reorder point
-    reorder_df['reorder_point'] = (reorder_df['quarterly_avg_pd'] * reorder_df['lead_time_quarters']) + reorder_df['quarterly_safety_stock']
+    reorder_df['reorder_point'] = (reorder_df['quarterly_avg_pd'] * reorder_df['lead_time_quarters']) + reorder_df[
+        'quarterly_safety_stock']
 
     return reorder_df
 
@@ -153,7 +156,8 @@ def get_quarterly_eoq(df_1, df_2):
     eoq_df = pd.merge(eoq_df, df_2, on='cluster_label')
 
     # Calculate EOQ
-    eoq_df['optimal_qty'] = np.round(np.sqrt((2 * eoq_df['quarterly_avg_demand'] * eoq_df['order_cost']) / eoq_df['holding_cost'])).astype(int)
+    eoq_df['optimal_qty'] = np.round(
+        np.sqrt((2 * eoq_df['quarterly_avg_demand'] * eoq_df['order_cost']) / eoq_df['holding_cost'])).astype(int)
     eoq_df = eoq_df.drop(columns=['order_cost', 'holding_cost'])
 
     return eoq_df
@@ -171,7 +175,8 @@ def get_quarterly_restock(df_1, df_2, z_score):
         Returns:
             pd.DataFrame: Clusters and quarters where restocking is needed, along with optimal quantity to restock.
     """
-    reorder_point_df = get_quarterly_reorder_point(df_1, df_2, z_score)[['cluster_label', 'year_quarter', 'reorder_point']]
+    reorder_point_df = get_quarterly_reorder_point(df_1, df_2, z_score)[
+        ['cluster_label', 'year_quarter', 'reorder_point']]
     eoq_df = get_quarterly_eoq(df_1, df_2)[['cluster_label', 'year_quarter', 'optimal_qty']]
     stock_df = df_2[['cluster_label', 'stock_quantity']]
 
@@ -181,14 +186,14 @@ def get_quarterly_restock(df_1, df_2, z_score):
     # Identify which clusters need restocking
     to_restock_df['to_restock'] = to_restock_df.apply(
         lambda row: 1 if (row['stock_quantity'] <= row['reorder_point']) and (row['reorder_point'] > 0) and (
-                    row['optimal_qty'] > 0) else 0, axis=1)
+                row['optimal_qty'] > 0) else 0, axis=1)
 
     # Filter for clusters that need restocking
     to_restock_df = to_restock_df[to_restock_df['to_restock'] == 1].reset_index(drop=True)
 
     return to_restock_df[['cluster_label', 'year_quarter', 'to_restock', 'optimal_qty']]
 
+
 # Save final restock list
 result = get_quarterly_restock(demand_df, stock_df, z_score)
-result.to_csv("../raw_data/quarterly_restock_list.csv", index=False)
-
+result.to_csv("data/quarterly_restock_list.csv", index=False)

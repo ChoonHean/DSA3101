@@ -6,7 +6,7 @@ from random_forest_train import preprocess, split_train_test, wape
 
 if __name__ == '__main__':
     # load raw_data
-    df = pd.read_csv("../cleaned_data/final_combined_dataset.csv")
+    df = pd.read_csv("../data/combined_dataset.csv")
 
     # preprocess data for splitting
     df = preprocess(df=df)
@@ -28,7 +28,7 @@ if __name__ == '__main__':
     # Create a scorer object for WAPE
     wape_scorer = make_scorer(wape, greater_is_better=False)
 
-    grid_search = GridSearchCV(estimator=rf, param_grid=param_grid, cv= 5, scoring=wape_scorer, n_jobs=-1)
+    grid_search = GridSearchCV(estimator=rf, param_grid=param_grid, cv=5, scoring=wape_scorer, n_jobs=-1)
     grid_search.fit(X_train, y_train)
 
     print(f"Best Parameters: {grid_search.best_params_}")

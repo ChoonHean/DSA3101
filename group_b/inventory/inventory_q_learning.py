@@ -21,6 +21,7 @@ class InventoryReinforcementLearning(GreedyQLearning):
         actions, leading to a larger state-action space which requires more exploration for the model to work optimally.
         Therefore, for a start, the amount to restock is not yet included, only a binary option to restock or not.
         """
+
     def __init__(self):
         super().__init__()
         self.set_alpha_value(1.0)
@@ -108,9 +109,10 @@ class InventoryReinforcementLearning(GreedyQLearning):
                 reward = -5
         return reward, state_key if state_key > 0 else 10
 
+
 if __name__ == "__main__":
     rl = InventoryReinforcementLearning()
-    rl.learn()
+    rl.learn(10)
     # The printed Q-table should show the better action to take, restock or not, at when the stock is at a certain level.
     # This should show that the lower the stock, the more likely restocking is better than not. With actual costs
     # returned as the reward, the model should learn the optimal threshold where restocking is better than to not.

@@ -12,8 +12,9 @@ from nltk import word_tokenize
 
 logging.basicConfig(level=logging.INFO)
 tqdm.pandas()
-os.environ["TOKENIZERS_PARALLELISM"] = "false" # disable tokenizers parallelism for minibatchkmeans
+os.environ["TOKENIZERS_PARALLELISM"] = "false"  # disable tokenizers parallelism for minibatchkmeans
 np.random.seed(42)
+
 
 def clean(text: str) -> str:
     """
@@ -30,6 +31,7 @@ def clean(text: str) -> str:
     text = re.sub(r"\s+", " ", text).strip()
     return text
 
+
 def lemmatize_sentence(lemmatizer, title: str) -> str:
     """
     Convert words in product title to their base forms e.g. running -> run
@@ -40,6 +42,7 @@ def lemmatize_sentence(lemmatizer, title: str) -> str:
     """
     lemmatized_words = [lemmatizer.lemmatize(word) for word in word_tokenize(title)]
     return " ".join(lemmatized_words)
+
 
 def get_top_words_per_cluster(tfidf_matrix, num_clusters, clusters, feature_names, top_n=10):
     """
@@ -66,6 +69,7 @@ def get_top_words_per_cluster(tfidf_matrix, num_clusters, clusters, feature_name
         cluster_keywords[cluster] = cols
     return cluster_keywords
 
+
 def save_cluster_content(num_clusters, clusters, features, top_n=10):
     """
     Processes the top N most representative words for each cluster using TF-IDF. Result is saved as CSV file.
@@ -82,14 +86,14 @@ def save_cluster_content(num_clusters, clusters, features, top_n=10):
     feature_names = vectorizer.get_feature_names_out()
     top_words_per_cluster = get_top_words_per_cluster(tfidf_matrix, num_clusters, clusters, feature_names, top_n=10)
     df_clusters = pd.DataFrame.from_dict(top_words_per_cluster, orient="index")
-    os.makedirs("../cleaned_data/others", exist_ok=True)
-    df_clusters.to_csv(f"../raw_data/others/top_words_for_{num_clusters}.csv")
+    os.makedirs("../data", exist_ok=True)
+    df_clusters.to_csv(f"../data/top_words_for_{num_clusters}.csv")
 
 
 if __name__ == "__main__":
     # load raw_data
     logging.info("Loading raw_data")
-    df_meta = pd.read_json("../raw_data/raw_data/meta_Amazon_Fashion.jsonl", lines=True)
+    df_meta = pd.read_json("../../raw_data/meta_Amazon_Fashion.jsonl", lines=True)
 
     # select columns needed
     useful_columns = ['title', 'average_rating', 'parent_asin']
@@ -143,15 +147,12 @@ if __name__ == "__main__":
         save_cluster_content(num_clusters, cluster_labels, df_meta['title_lemma'], top_n=10)
 
         logging.info("Save the processed raw_data")
-        os.makedirs("../cleaned_data", exist_ok=True)
-        output_path = os.path.abspath(f"../raw_data/cleaned_data/cleaned_metadata_{num_clusters}_clusters.csv")
+        os.makedirs("../data", exist_ok=True)
+        output_path = os.path.abspath(f"../data/cleaned_metadata_{num_clusters}_clusters.csv")
         df_meta.to_csv(output_path, index=False)
 
     # after checking the best number of clusters, i.e. N=150, clean the final metadata df and save
     best_num_cluster = 150
-    final_df = pd.read_csv(f"../raw_data/cleaned_data/cleaned_metadata_{best_num_cluster}_clusters.csv")
+    final_df = pd.read_csv(f"../data/cleaned_metadata_{best_num_cluster}_clusters.csv")
     final_df.drop(['title_cleaned', 'title_lemma'], axis=1, inplace=True)
-    final_df.to_csv(f"../raw_data/cleaned_data/final_cleaned_metadata.csv", index=False)
-
-
-
+    final_df.to_csv(f"../data/metadata.csv", index=False)

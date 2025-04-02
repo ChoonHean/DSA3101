@@ -5,6 +5,7 @@ import pandas as pd
 from sklearn.ensemble import RandomForestRegressor
 import joblib
 
+
 def preprocess(df):
     """
     Preprocesses the raw_data for sales forecasting.
@@ -29,7 +30,7 @@ def preprocess(df):
     df['cluster_label'] = df['cluster_label'].astype(int)
     df = pd.get_dummies(df, columns=['cluster_label'], prefix='cluster')
     ohe_cols = sorted([col for col in df.columns if col.startswith('cluster_')],
-                  key=lambda x: int(x.split('_')[-1]))
+                      key=lambda x: int(x.split('_')[-1]))
     df = df[[col for col in df.columns if col not in ohe_cols] + ohe_cols]
 
     # apply log transformation to num_sales and lagged num_sales
@@ -45,8 +46,8 @@ def preprocess(df):
     # fill missing values with 0 sales
     df.fillna(0, inplace=True)
 
-    os.makedirs("../raw_data/demand_forecasting", exist_ok=True)
-    df.to_csv("../raw_data/demand_forecasting/random_forest_dataset.csv", index=False)
+    os.makedirs("../data", exist_ok=True)
+    df.to_csv("../data/random_forest_dataset.csv", index=False)
     return df
 
 
@@ -69,6 +70,7 @@ def split_train_test(df, target_col, split_year):
 
     return X_train, X_test, y_train, y_test
 
+
 def wape(y_test, y_pred):
     """
     Compute weighted absolute percentage error (WAPE).
@@ -83,7 +85,7 @@ def wape(y_test, y_pred):
 
 if __name__ == '__main__':
     # load final training raw_data
-    df = pd.read_csv("../cleaned_data/final_combined_dataset.csv")
+    df = pd.read_csv("../data/combined_dataset.csv")
 
     # preprocess data for splitting
     df = preprocess(df=df)
@@ -111,7 +113,7 @@ if __name__ == '__main__':
     y_test_actual = np.expm1(y_test)
 
     # save the trained model for future use
-    joblib.dump(rf_best, "/random_forest_model.joblib")
+    joblib.dump(rf_best, "random_forest_model.joblib")
 
     # evaluate model performance using weighted absolute percentage error (WAPE)
     wape = wape(y_test_actual, y_pred_actual)
