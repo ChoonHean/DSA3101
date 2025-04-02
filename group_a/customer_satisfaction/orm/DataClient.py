@@ -103,7 +103,7 @@ class DataClient:
     def populate_database(self, script_path, kwargs):
         """
         Populates postgresql database.
-        :param script_path: String for directory to sql script path.
+        :param script_path: String for directory to sql src path.
         :param kwargs: Arguments for reading from library or local.
         """
         self._run_script(script_path)
