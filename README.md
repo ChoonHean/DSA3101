@@ -35,7 +35,11 @@ need to put the directory tree here
 ---
 
 ## Subgroup A - AI Image Synthesis and User Experience
-## Q1:
+## Q1: How can we develop an AI model to generate realistic product images based on user customization choices?
+
+
+---
+## Q2: What factors influence user satisfaction during the product customization process?
 
 ---
 
@@ -125,3 +129,28 @@ By combining both components that reflect the customization and demand changes, 
 | timestamp | int |Time of the review (unix time). |
 | verified_purchase | bool |User purchase verification. |
 | helpful_vote | int |Helpful votes of the review. |
+
+### For Item Metadata
+| Field | Type | Description |
+| :--- | --- |--- |
+| main_category | str | Main category (i.e.,domain) of the product. |
+| title | str |Name of the product. |
+| average_rating | float |Rating of the product shown on the product page. |
+| rating_number | int |Number of ratings in the product. |
+| features | list |Bullet-point format features of the product. |
+| description | list |Description of the product. |
+| price | float |Price in US dollars (at time of crawling). |
+| images | list |Images of the product. Each image has different sizes (thumb, large, hi_res). The “variant” field shows the position of image. |
+| videos | list |Videos of the product including title and url. |
+| store | str |Store name of the product. |
+| categories | list |Hierarchical categories of the product. |
+| details | dict |Product details, including materials, brand, sizes, etc. |
+| parent_asin | str |Parent ID of the product. |
+| bought_together | list |Recommended bundles from the websites. |
+
+### **Table Relationships**
+- **`reviews.parent_asin`** → **FK → `items.parent_asin`**  
+  (Each review is associated with an item.)
+
+
+
