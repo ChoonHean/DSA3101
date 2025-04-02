@@ -1,7 +1,7 @@
 # Subgroup B -  Question 2: What inventory management strategies will optimize stock levels and minimize costs?
 
 ## How to Run
-To reproduce the inventory optimization logic:  
+To reproduce the inventory optimization logic :  
 
 1. Navigate to **group_b/inventory** folder
 2. Run `qn2_inventory_optimization.py`  
