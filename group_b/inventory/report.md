@@ -37,7 +37,7 @@ The inventory strategy combines demand forecasting with classical inventory cont
 ---
 ## Implementation
 
-The script `qn2_inventory_optimization.py` loads the forecasted demand and simulates an optimized inventory strategy using:
+The script `inventory_optimization.py` loads the forecasted demand and simulates an optimized inventory strategy using:
 - Safety stock (based on demand variability and lead time)
 - Reorder point (ROP)
 - Economic Order Quantity (EOQ)
