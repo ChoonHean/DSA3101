@@ -1,3 +1,5 @@
+import os
+
 import pandas as pd
 from itertools import product
 
@@ -51,5 +53,6 @@ if __name__ == "__main__":
     print(df_final.head())
 
     # save the final data into csv
+    os.makedirs("../dataset/cleaned_data", exist_ok=True)
     df_final.to_csv("../dataset/cleaned_data/final_combined_dataset.csv", index=False)
 
