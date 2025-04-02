@@ -1,3 +1,4 @@
+import os
 import pandas as pd
 import re
 from vaderSentiment.vaderSentiment import SentimentIntensityAnalyzer
@@ -52,4 +53,5 @@ if __name__ == "__main__":
     print(df_review.head())
 
     # Save the data into csv
+    os.makedirs("../dataset/cleaned_data", exist_ok=True)
     df_review.to_csv("../dataset/cleaned_data/final_cleaned_review.csv", index=False)
