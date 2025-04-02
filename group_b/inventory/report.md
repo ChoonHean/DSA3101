@@ -1,10 +1,3 @@
-# DSA3101
-AI-driven merchandise customization platform for E-commerce
-
-```
-pip install -r requirements.txt
-```
-
 # Subgroup B – Question 2: What inventory management strategies will optimize stock levels and minimize costs?
 
 ## Objective
