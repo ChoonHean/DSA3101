@@ -50,7 +50,7 @@ The code includes detailed inline comments and docstrings explaining each step o
 
 ## Output
 
-The final restocking recommendations are saved in `dataset/quarterly_restock_list.csv`
+The final restocking recommendations are saved in `quarterly_restock_list.csv`
 
 This output includes the following columns:
 - `cluster_label`
@@ -78,7 +78,7 @@ Each scenario compares:
 - Tracks stock levels, unmet demand (stockouts), and costs
 
 ### 2. **Naive Strategy**
-The `apply_naive_inventory_strategy()` function used to build naive strategy is defined in `potential_scenarios/normal_scenario.py`.
+The `apply_naive_inventory_strategy()` function used to build naive strategy is defined in `inventory/normal_scenario.py`.
 - Reorder if stock falls below 80% of last quarter’s demand
 - Orders 110% of last quarter’s demand
 - Uses a fixed safety stock (20% of previous demand)
@@ -87,7 +87,7 @@ The `apply_naive_inventory_strategy()` function used to build naive strategy is 
 ---
 
 ## Performance Metrics
-The `compare_inventory_models()` function used to evaluate performance metrics is defined in `potential_scenarios/normal_scenario.py`.
+The `compare_inventory_models()` function used to evaluate performance metrics is defined in `inventory/normal_scenario.py`.
 
 | Metric               | Description |
 |----------------------|-------------|
@@ -101,7 +101,7 @@ The `compare_inventory_models()` function used to evaluate performance metrics i
 
 ## Scenario 1: Normal Demand (Base Case)
 To simulate and compare the naive strategy vs our optimized inventory algorithm under **normal demand**, open the file
-`potential_scenarios/simulate_scenarios.py` to generate simulated dataset, then open `potential_scenarios/normal_scenario.py` to test the performance
+`inventory/simulate_scenarios.py` to generate simulated dataset, then open `inventory/normal_scenario.py` to test the performance
 - Simulated 10 clusters over 4 quarters (2025Q1–2025Q4)
 - Base demand: 300–400 units per quarter
 - Lead time: 1.0–3.0 months
@@ -117,15 +117,15 @@ To simulate and compare the naive strategy vs our optimized inventory algorithm 
 ## Other Scenarios
 
 ### Scenario 2: High Demand
-open the file: `potential_scenarios/high_demand_scenario.py`
+open the file: `inventory/high_demand_scenario.py`
 - Simulates peak seasons or increased product popularity
 
 ### Scenario 3: Low Demand
-open the file: `potential_scenarios/low_demand_scenario.py`
+open the file: `inventory/low_demand_scenario.py`
 - Tests performance in resource-constrained environments
 
 ### Scenario 4: Random Demand
-open the file: `potential_scenarios/random_demand_scenario.py`
+open the file: `inventory/random_demand_scenario.py`
 - Tests adaptability to unpredictable market patterns
 
 Each script uses the same logic but adjusts demand and stock to simulate specific environments.
