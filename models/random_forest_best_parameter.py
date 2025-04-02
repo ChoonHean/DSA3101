@@ -1,22 +1,8 @@
+from sklearn.metrics import make_scorer
 from sklearn.model_selection import GridSearchCV
-import numpy as np
 import pandas as pd
 from sklearn.ensemble import RandomForestRegressor
-from random_forest_train import preprocess, split_train_test
-
-def wape(y_test, y_pred):
-    """
-    Compute weighted absolute percentage error (WAPE).
-
-    :param y_test: Actual target values in test dataset.
-    :param y_pred: Predicted target values in test dataset.
-    :return: value of weighted absolute percentage error.
-    """
-    wape = np.sum(np.abs(y_test - y_pred)) / np.sum(y_test) * 100
-    return wape
-
-# Create a scorer object for WAPE
-wape_scorer = make_scorer(wape, greater_is_better=False)
+from random_forest_train import preprocess, split_train_test, wape
 
 if __name__ == '__main__':
     # load dataset
@@ -38,6 +24,10 @@ if __name__ == '__main__':
 
     # conduct grid search for hyperparameter tuning of random forest regressor
     rf = RandomForestRegressor(random_state=42)
+
+    # Create a scorer object for WAPE
+    wape_scorer = make_scorer(wape, greater_is_better=False)
+
     grid_search = GridSearchCV(estimator=rf, param_grid=param_grid, cv= 5, scoring=wape_scorer, n_jobs=-1)
     grid_search.fit(X_train, y_train)
 
